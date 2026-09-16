@@ -1901,6 +1901,7 @@
             document.getElementById('multiProductFormsContainer').style.display = 'none';
             isSelectAllMode = false;
             updatePreview();
+            localStorage.removeItem('sf_create_post_form');
         }
 
         // Switch tabs
@@ -3326,6 +3327,7 @@
             document.getElementById('personalPostDescription').value = '';
             document.getElementById('personalPostHashtags').value = '';
             updatePersonalPostPreview();
+            localStorage.removeItem('sf_create_post_form');
         }
 
         // Add event listeners for personal profile form
