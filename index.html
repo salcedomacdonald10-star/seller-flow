@@ -1082,6 +1082,23 @@
         // All products list
         const allProducts = ['galila', 'rxone', 'siteledger', 'onlinetindero', 'sellerflow', 'english101', 'tindahanko', 'menupro', 'billis', 'doctorsin', 'equipmenttracker', 'digitalalley', 'socialmediamanager'];
 
+        // Product names mapping
+        const productNames = {
+            galila: 'Galila Express (Delivery/Online Ordering)',
+            rxone: 'Rx One (Pharmacy POS)',
+            siteledger: 'Site Ledger (Contractor Ledger)',
+            onlinetindero: 'Online Tindero (Affiliate Store)',
+            sellerflow: 'Seller Flow (Social Media Posting)',
+            english101: 'English 101 (ESL Teaching)',
+            tindahanko: 'Tindahanko (Grocery/Merchandise POS)',
+            menupro: 'MenuPro (Restaurant POS)',
+            billis: 'Billis (Payment Center)',
+            doctorsin: 'The Doctors are In (Medical Records)',
+            equipmenttracker: 'EquipmentTracker (Construction)',
+            digitalalley: 'Digital Alley Solutions (Dev Services)',
+            socialmediamanager: 'Social Media Manager (Facebook Service)'
+        };
+
         // Group configuration
         const facebookGroups = {
             galila: [
@@ -1927,10 +1944,14 @@
 
         // Save form data from Create Post tab to localStorage
         function saveCreatePostFormData() {
+            // Get selected products
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+
             const formData = {
                 postTitle: document.getElementById('postTitle').value,
                 postDescription: document.getElementById('postDescription').value,
-                postHashtags: document.getElementById('postHashtags').value
+                postHashtags: document.getElementById('postHashtags').value,
+                selectedProducts: selectedProducts
             };
             localStorage.setItem('sf_create_post_form', JSON.stringify(formData));
         }
@@ -1942,13 +1963,19 @@
             if (savedFormData) {
                 try {
                     const formData = JSON.parse(savedFormData);
-                    if (formData.postTitle || formData.postDescription || formData.postHashtags) {
-                        document.getElementById('personalPostTitle').value = formData.postTitle || '';
-                        document.getElementById('personalPostDescription').value = formData.postDescription || '';
-                        document.getElementById('personalPostHashtags').value = formData.postHashtags || '';
-                        updatePersonalPostPreview();
-                        return;
+                    // Restore form fields
+                    document.getElementById('personalPostTitle').value = formData.postTitle || '';
+                    document.getElementById('personalPostDescription').value = formData.postDescription || '';
+                    document.getElementById('personalPostHashtags').value = formData.postHashtags || '';
+
+                    // Display selected products info if available
+                    if (formData.selectedProducts && formData.selectedProducts.length > 0) {
+                        const productsDisplay = formData.selectedProducts.map(p => productNames[p] || p).join(', ');
+                        showSuccess(`📌 Using products from Create Post: ${productsDisplay}`);
                     }
+
+                    updatePersonalPostPreview();
+                    return;
                 } catch (e) {
                     console.log('Error loading form data:', e);
                 }
