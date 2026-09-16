@@ -618,6 +618,7 @@
         <div class="nav-links">
             <button onclick="switchTab('postTab')">Create Post</button>
             <button onclick="switchTab('personalProfilesTab')">👤 Personal Profiles</button>
+            <button onclick="switchTab('queueTab')">📤 Pending Queue</button>
             <button onclick="switchTab('historyTab')">Posted History</button>
             <button onclick="switchTab('analyticsTab')">Analytics</button>
             <button onclick="switchTab('leadsTab')">👥 Leads</button>
@@ -849,6 +850,36 @@
                 </div>
 
                 <button class="secondary" onclick="clearPersonalForm()" style="margin-top: 15px; width: 100%;">Clear Form</button>
+            </div>
+        </div>
+
+        <!-- PENDING QUEUE TAB -->
+        <div id="queueTab" class="tab-content hidden">
+            <div class="form-section">
+                <h3>📤 Pending Queue</h3>
+                <p style="color: #666; margin-bottom: 20px;">Select posts you've manually posted to Facebook and mark them complete.</p>
+            </div>
+
+            <div class="form-section">
+                <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                    <button onclick="selectAllQueueItems()" style="background: #667eea; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">✓ Select All</button>
+                    <button onclick="clearQueueSelection()" style="background: #ddd; color: #333; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">Clear Selection</button>
+                    <button onclick="markSelectedAsPosted()" style="background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">✅ Mark as Posted</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)"></th>
+                            <th>Queued Date</th>
+                            <th>Product</th>
+                            <th>Title</th>
+                            <th>Preview</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queueTable">
+                        <tr><td colspan="5" style="text-align: center; color: #999;">No pending posts. Queue posts from Personal Profiles section above!</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -1931,7 +1962,10 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
 
-            if (tabId === 'historyTab') {
+            if (tabId === 'queueTab') {
+                loadPendingQueue();
+            } else if (tabId === 'historyTab') {
+                loadPostedHistory();
                 updateHistory();
             } else if (tabId === 'analyticsTab') {
                 updateAnalytics();
@@ -1958,18 +1992,27 @@
 
         // Load form data to Personal Profiles tab
         function loadFormDataToPersonalProfiles() {
+            // Check if elements exist
+            const titleEl = document.getElementById('personalPostTitle');
+            const descEl = document.getElementById('personalPostDescription');
+            const hashEl = document.getElementById('personalPostHashtags');
+
+            if (!titleEl || !descEl || !hashEl) {
+                return; // Personal Profiles tab not loaded yet
+            }
+
             // First try to load from Create Post form data
             const savedFormData = localStorage.getItem('sf_create_post_form');
             if (savedFormData) {
                 try {
                     const formData = JSON.parse(savedFormData);
                     // Restore form fields
-                    document.getElementById('personalPostTitle').value = formData.postTitle || '';
-                    document.getElementById('personalPostDescription').value = formData.postDescription || '';
-                    document.getElementById('personalPostHashtags').value = formData.postHashtags || '';
+                    titleEl.value = formData.postTitle || '';
+                    descEl.value = formData.postDescription || '';
+                    hashEl.value = formData.postHashtags || '';
 
                     // Display selected products info if available
-                    if (formData.selectedProducts && formData.selectedProducts.length > 0) {
+                    if (formData.selectedProducts && formData.selectedProducts.length > 0 && typeof productNames !== 'undefined') {
                         const productsDisplay = formData.selectedProducts.map(p => productNames[p] || p).join(', ');
                         showSuccess(`📌 Using products from Create Post: ${productsDisplay}`);
                     }
@@ -2043,11 +2086,19 @@
 
         // Auto-load scheduled template content for current hour in Personal Profiles
         function autoLoadCurrentHourTemplate() {
+            const titleEl = document.getElementById('personalPostTitle');
+            const descEl = document.getElementById('personalPostDescription');
+            const hashEl = document.getElementById('personalPostHashtags');
+
+            if (!titleEl || !descEl || !hashEl) {
+                return; // Elements not ready
+            }
+
             const now = new Date();
             const currentHour = now.getHours();
 
             // Reload scheduled posts from localStorage to get latest
-            scheduledPosts = JSON.parse(localStorage.getItem('sf_scheduled_posts')) || [];
+            const scheduledPosts = JSON.parse(localStorage.getItem('sf_scheduled_posts')) || [];
 
             // Find scheduled posts for current hour
             let foundTemplate = null;
@@ -2069,24 +2120,29 @@
             }
 
             // If found, auto-populate the Personal Profiles fields
-            if (foundTemplate && foundTemplate.postData) {
-                const { postData } = foundTemplate;
+            if (foundTemplate && foundTemplate.postData && foundTemplate.postData.customContent) {
+                try {
+                    const { postData } = foundTemplate;
+                    // Get the first product's content as template
+                    const firstProduct = Object.keys(postData.customContent)[0];
+                    if (firstProduct && postData.customContent[firstProduct]) {
+                        const content = postData.customContent[firstProduct];
 
-                // Get the first product's content as template
-                const firstProduct = Object.keys(postData.customContent)[0];
-                if (firstProduct && postData.customContent[firstProduct]) {
-                    const content = postData.customContent[firstProduct];
+                        titleEl.value = content.title || '';
+                        descEl.value = content.description || '';
+                        hashEl.value = content.hashtags || '#DigitalAlley #SupportLocal';
 
-                    document.getElementById('personalPostTitle').value = content.title || '';
-                    document.getElementById('personalPostDescription').value = content.description || '';
-                    document.getElementById('personalPostHashtags').value = content.hashtags || '#DigitalAlley #SupportLocal';
+                        // Update preview
+                        updatePersonalPostPreview();
 
-                    // Update preview
-                    updatePersonalPostPreview();
-
-                    // Show notification
-                    showSuccess('✅ Auto-loaded: ' + (content.title || 'Scheduled template') + ' for ' + currentHour + ':00');
-                    logAuditAction('PERSONAL_PROFILES', `Auto-loaded template for hour ${currentHour}`);
+                        // Show notification
+                        showSuccess('✅ Auto-loaded: ' + (content.title || 'Scheduled template') + ' for ' + currentHour + ':00');
+                        if (typeof logAuditAction === 'function') {
+                            logAuditAction('PERSONAL_PROFILES', `Auto-loaded template for hour ${currentHour}`);
+                        }
+                    }
+                } catch (e) {
+                    console.log('Error auto-loading template:', e);
                 }
             }
         }
@@ -2849,6 +2905,16 @@
         switchTab('postTab');
         updateTemplatesList();
 
+        // Delay loading queue/history until DOM is ready
+        setTimeout(() => {
+            try {
+                loadPendingQueue();
+                loadPostedHistory();
+            } catch (e) {
+                console.log('Queue/History load delayed - will load when tabs are accessed');
+            }
+        }, 100);
+
         // Initial data validation
         validateStoredData();
 
@@ -3149,11 +3215,19 @@
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
+            // Store in localStorage queue for tracking
+            let queue = JSON.parse(localStorage.getItem('sf_pending_queue')) || [];
+            queue.push(queueEntry);
+            localStorage.setItem('sf_pending_queue', JSON.stringify(queue));
+
             // Log action
             logAuditAction('POST_QUEUED_FOR_WORKFLOW', `Post queued: ${title} (ID: ${postId})`);
 
+            // Refresh queue display
+            loadPendingQueue();
+
             // Show success message with instructions
-            showSuccess(`✅ Post queued for automatic posting!\n\nFile: ${filename}\n\nNext step: Drag this file to your Google Drive "SellerFlow-PendingPosts" folder. Claude Workflow will post it within the next 2 hours.`);
+            showSuccess(`✅ Post queued for automatic posting!\n\nFile: ${filename}\n\nNext step: Mark as posted in the Pending Queue tab when you've manually posted this to Facebook.`);
         }
 
         // Generate personal post text
@@ -3165,26 +3239,139 @@
             return text.trim();
         }
 
+        // Pending Queue Management Functions
+        function loadPendingQueue() {
+            const queue = JSON.parse(localStorage.getItem('sf_pending_queue')) || [];
+            const tableBody = document.getElementById('queueTable');
+
+            if (queue.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No pending posts. Queue posts from Personal Profiles section above!</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = queue.map((item, index) => `
+                <tr>
+                    <td style="width: 30px;"><input type="checkbox" class="queue-item-checkbox" data-index="${index}"></td>
+                    <td>${new Date(item.createdAt).toLocaleDateString()} ${new Date(item.createdAt).toLocaleTimeString()}</td>
+                    <td>Seller Flow</td>
+                    <td><strong>${item.title.substring(0, 30)}</strong></td>
+                    <td>${item.description.substring(0, 50)}...</td>
+                </tr>
+            `).join('');
+        }
+
+        function selectAllQueueItems() {
+            document.querySelectorAll('.queue-item-checkbox').forEach(cb => cb.checked = true);
+        }
+
+        function clearQueueSelection() {
+            document.querySelectorAll('.queue-item-checkbox').forEach(cb => cb.checked = false);
+        }
+
+        function toggleSelectAll(checkbox) {
+            document.querySelectorAll('.queue-item-checkbox').forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        function markSelectedAsPosted() {
+            const queue = JSON.parse(localStorage.getItem('sf_pending_queue')) || [];
+            const history = JSON.parse(localStorage.getItem('sf_posting_log')) || [];
+
+            const selectedIndexes = [];
+            document.querySelectorAll('.queue-item-checkbox:checked').forEach(cb => {
+                selectedIndexes.push(parseInt(cb.dataset.index));
+            });
+
+            if (selectedIndexes.length === 0) {
+                showError('❌ Please select at least one post to mark as posted');
+                return;
+            }
+
+            // Move selected items to history
+            selectedIndexes.reverse().forEach(index => {
+                const item = queue[index];
+                history.push({
+                    key: item.id,
+                    product: 'Seller Flow Post',
+                    group: 'Personal Profile',
+                    title: item.title,
+                    description: item.description,
+                    hashtags: item.hashtags,
+                    timestamp: Date.now(),
+                    datePosted: new Date().toLocaleDateString(),
+                    engagement: { likes: 0, comments: 0, shares: 0 },
+                    reach: 0
+                });
+                queue.splice(index, 1);
+            });
+
+            // Update localStorage
+            localStorage.setItem('sf_pending_queue', JSON.stringify(queue));
+            localStorage.setItem('sf_posting_log', JSON.stringify(history));
+
+            // Log action
+            logAuditAction('POSTS_MARKED_POSTED', `${selectedIndexes.length} posts marked as posted`);
+
+            // Refresh displays
+            loadPendingQueue();
+            loadPostedHistory();
+
+            showSuccess(`✅ ${selectedIndexes.length} post(s) marked as posted and moved to history!`);
+        }
+
+        function loadPostedHistory() {
+            const history = JSON.parse(localStorage.getItem('sf_posting_log')) || [];
+            const tableBody = document.getElementById('historyTable');
+
+            if (history.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No posts yet. Create your first post above!</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = history.map((item, index) => `
+                <tr>
+                    <td>${item.datePosted || new Date(item.timestamp).toLocaleDateString()}</td>
+                    <td>${item.product}</td>
+                    <td>${item.group}</td>
+                    <td><strong>${item.title}</strong></td>
+                    <td>${item.engagement.likes}L / ${item.engagement.comments}C / ${item.engagement.shares}S</td>
+                    <td>${item.reach || 0}</td>
+                    <td><button onclick="removeFromHistory(${index})" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Remove</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function removeFromHistory(index) {
+            const history = JSON.parse(localStorage.getItem('sf_posting_log')) || [];
+            history.splice(index, 1);
+            localStorage.setItem('sf_posting_log', JSON.stringify(history));
+            loadPostedHistory();
+            showSuccess('✅ Post removed from history');
+        }
+
         // Removed old testPostViaClaudeBrowser function - replaced with queueForAutomaticPosting
 
         // Personal Profiles Functions
         function updatePersonalPostPreview() {
-            const title = document.getElementById('personalPostTitle').value;
-            const description = document.getElementById('personalPostDescription').value;
-            const hashtags = document.getElementById('personalPostHashtags').value;
+            const titleEl = document.getElementById('personalPostTitle');
+            const descEl = document.getElementById('personalPostDescription');
+            const hashEl = document.getElementById('personalPostHashtags');
+            const previewDiv = document.getElementById('personalPostPreview');
+
+            if (!titleEl || !descEl || !hashEl || !previewDiv) {
+                return; // Elements not loaded yet
+            }
 
             let preview = '';
-            if (title) {
-                preview += title + '\n\n';
+            if (titleEl.value) {
+                preview += titleEl.value + '\n\n';
             }
-            if (description) {
-                preview += description + '\n\n';
+            if (descEl.value) {
+                preview += descEl.value + '\n\n';
             }
-            if (hashtags) {
-                preview += hashtags;
+            if (hashEl.value) {
+                preview += hashEl.value;
             }
 
-            const previewDiv = document.getElementById('personalPostPreview');
             if (preview.trim()) {
                 previewDiv.textContent = preview.trim();
             } else {
