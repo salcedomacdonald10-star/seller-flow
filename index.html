@@ -3913,10 +3913,7 @@
         function blastPostNow() {
             const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
 
-            if (Object.keys(products).length === 0) {
-                alert('❌ Please upload product images first');
-                return;
-            }
+            
 
             // Show preview modal
             const nextImage = getNextBlastImage();
@@ -3999,12 +3996,7 @@
 
             const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
 
-            if (Object.keys(products).length === 0) {
-                statusDiv.style.display = 'block';
-                statusDiv.style.background = '#dc3545';
-                statusDiv.textContent = '❌ Please upload product images first';
-                return;
-            }
+            
 
             let schedules = JSON.parse(localStorage.getItem('sf_blast_schedules') || '[]');
             schedules.push({
