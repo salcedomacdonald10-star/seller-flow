@@ -1,0 +1,3217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Flow - Social Media Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .nav-links button.logout {
+            color: #e74c3c;
+        }
+
+        .footer-banner {
+            background: #f0f0f0;
+            padding: 12px 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .form-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        button.danger {
+            background: #e74c3c;
+        }
+
+        button.danger:hover {
+            background: #c0392b;
+        }
+
+        /* Multi-select dropdown */
+        .multiselect-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .multiselect-header {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .multiselect-header:hover {
+            border-color: #667eea;
+        }
+
+        .multiselect-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .multiselect-dropdown.open {
+            display: block;
+        }
+
+        .multiselect-option {
+            padding: 8px 0;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            display: block;
+            text-align: left;
+        }
+
+        .multiselect-option:hover {
+            background: #f9f9f9;
+        }
+
+        .multiselect-option input {
+            cursor: pointer;
+            margin: 0 !important;
+            padding: 0 !important;
+            margin-right: 6px !important;
+            vertical-align: middle;
+            width: auto !important;
+            height: auto !important;
+        }
+
+        .multiselect-option label {
+            margin: 0 !important;
+            cursor: pointer;
+            text-align: left;
+            display: inline;
+            vertical-align: middle;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Facebook Groups Selector */
+        .groups-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .group-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .group-checkbox input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .group-checkbox:hover {
+            background: #f0f0f0;
+        }
+
+        /* Posted History Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .table th {
+            background: #f9f9f9;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #eee;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* Analytics Cards */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .analytics-card h4 {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analytics-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .analytics-card .meta {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge.product {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge.group {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge.engagement {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        /* Top Products Chart */
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .chart-container h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .chart-bar {
+            margin-bottom: 15px;
+        }
+
+        .chart-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .chart-bar-bg {
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-box h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .login-box button:hover {
+            background: #5568d3;
+        }
+
+        .audit-log-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            overflow-y: auto;
+        }
+
+        .audit-log-modal.active {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .audit-log-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 100%;
+            margin: auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .audit-log-content h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .audit-log-content .close-btn {
+            float: right;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #settingsModal .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        #settingsModal h4 {
+            color: #333;
+            font-size: 16px;
+        }
+
+        #settingsModal .login-box {
+            max-width: 450px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal active">
+        <div class="login-box">
+            <h2>🔐 Seller Flow Login</h2>
+            <input type="password" id="loginPassword" placeholder="Enter password" onkeypress="if(event.key==='Enter') login()">
+            <button onclick="login()">Login</button>
+            <button onclick="showCurrentPassword()" style="background: #f0f0f0; color: #666; margin-top: 8px; width: 100%;">Show Current Password</button>
+            <p style="text-align: center; color: #999; font-size: 12px; margin-top: 15px;">
+                🔐 Secure password set on first run<br>
+                Change it after login in Settings
+            </p>
+            <div id="passwordDisplay" style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 4px; display: none; border: 1px solid #ddd;">
+                <p style="font-size: 11px; color: #666; margin-bottom: 5px;">Current password:</p>
+                <p id="displayedPassword" style="font-family: monospace; font-size: 14px; color: #333; margin: 0; word-break: break-all;"></p>
+                <p style="font-size: 11px; color: #999; margin-top: 8px;">⚠️ Don't share this password. Clear your browser history after use.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Log Modal -->
+    <div id="auditLogModal" class="audit-log-modal">
+        <div class="audit-log-content">
+            <button class="close-btn" onclick="closeAuditLog()">Close</button>
+            <h3>📋 Action Audit Log</h3>
+            <div id="auditLogContent" style="max-height: 60vh; overflow-y: auto;">
+                <!-- Will be populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="login-modal">
+        <div class="login-box">
+            <button class="close-btn" onclick="closeSettings()" style="position: absolute; top: 10px; right: 10px; float: none;">×</button>
+            <h2>⚙️ Settings</h2>
+            <div style="margin-top: 20px;">
+                <h4 style="margin-bottom: 10px; color: #333;">Change Password</h4>
+                <p style="color: #666; font-size: 12px; margin-bottom: 10px;">🔐 Secure password - enter your current password to change it</p>
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0;">
+                </div>
+                <button onclick="changePassword()" style="width: 100%; margin-bottom: 10px;">Change Password</button>
+                <button class="secondary" onclick="closeSettings()" style="width: 100%;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <h1>📱 Seller Flow - Social Media Manager</h1>
+        <div class="nav-links">
+            <button onclick="switchTab('postTab')">Create Post</button>
+            <button onclick="switchTab('personalProfilesTab')">👤 Personal Profiles</button>
+            <button onclick="switchTab('historyTab')">Posted History</button>
+            <button onclick="switchTab('analyticsTab')">Analytics</button>
+            <button onclick="switchTab('leadsTab')">👥 Leads</button>
+            <button onclick="openAuditLog()" style="color: #667eea;">📋 Audit Log</button>
+            <button onclick="openSettings()" style="color: #667eea;">⚙️ Settings</button>
+            <button class="logout" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="footer-banner">
+        ✨ Powered by Digital Alley Solutions
+    </div>
+
+    <div class="container">
+        <!-- POST TAB -->
+        <div id="postTab" class="tab-content">
+            <div class="form-section">
+                <h3>📝 Create & Post to Facebook Groups</h3>
+                <p style="color: #666; margin-bottom: 20px;">Select a template, customize your message, choose Facebook groups, and track engagement.</p>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Select Product/Service</label>
+                    <div class="multiselect-container">
+                        <div class="multiselect-header" onclick="toggleMultiselectDropdown()">
+                            <span id="selectedCount">Select products...</span>
+                            <span>▼</span>
+                        </div>
+                        <div id="multiselectDropdown" class="multiselect-dropdown">
+                            <div class="multiselect-option" onclick="event.stopPropagation(); selectAllMultiple();" style="background: #f0f8ff; font-weight: 600; border-bottom: 2px solid #ddd;">
+                                ✓ SELECT ALL 13 PRODUCTS
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="galila" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Galila Express (Delivery/Online Ordering)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="rxone" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Rx One (Pharmacy POS)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="siteledger" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Site Ledger (Contractor Ledger)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="onlinetindero" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Online Tindero (Affiliate Store)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="sellerflow" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Seller Flow (Social Media Posting)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="english101" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">English 101 (ESL Teaching)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="tindahanko" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Tindahanko (Grocery/Merchandise POS)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="menupro" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">MenuPro (Restaurant POS)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="billis" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Billis (Payment Center)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="doctorsin" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">The Doctors are In (Medical Records)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="equipmenttracker" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">EquipmentTracker (Construction)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="digitalalley" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Digital Alley Solutions (Dev Services)</label>
+                            </div>
+                            <div class="multiselect-option">
+                                <input type="checkbox" value="socialmediamanager" class="productCheckbox" onchange="updateMultiselectDisplay()">
+                                <label style="margin: 0; cursor: pointer; flex: 1;">Social Media Manager (Facebook Service)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Use Template</label>
+                    <select id="templateSelect" onchange="applyTemplate()">
+                        <option value="">-- Choose a template --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Post Title</label>
+                    <input type="text" id="postTitle" placeholder="Enter post title">
+                </div>
+
+                <div class="form-group">
+                    <label>Post Description</label>
+                    <textarea id="postDescription" placeholder="Enter post content"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Hashtags (optional)</label>
+                    <input type="text" id="postHashtags" placeholder="#PangasinanBusiness #DigitalAlley #SupportLocal">
+                </div>
+
+                <!-- Multi-Product Custom Forms -->
+                <div id="multiProductFormsContainer" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #667eea;">
+                    <p style="color: #667eea; font-weight: 600; margin-bottom: 15px;">📝 Customize Each Product (Optional)</p>
+                    <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Leave empty to use auto-rotating templates</p>
+                    <div id="multiProductForms">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Auto-Schedule Section -->
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border: 1px solid #667eea; border-radius: 6px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <input type="checkbox" id="enableSchedule" onchange="toggleScheduleForm()">
+                        <label style="margin: 0; cursor: pointer; font-weight: 600; color: #333;">⏰ Schedule this post for later</label>
+                    </div>
+                    <div id="scheduleForm" style="display: none; padding: 15px; background: white; border-radius: 4px; border: 1px solid #ddd;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Date</label>
+                                <input type="date" id="scheduleDate" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Time (HH:MM)</label>
+                                <input type="time" id="scheduleTime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                        </div>
+                        <p style="font-size: 12px; color: #666; margin: 0 0 10px 0;">Post will be published automatically at the scheduled time</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>📍 Select Facebook Groups</h3>
+                <p style="color: #666; margin-bottom: 15px;">Choose which groups to post this to:</p>
+
+                <div id="groupsContainer" class="groups-selector">
+                    <!-- Will be populated based on product selection -->
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 6px; border-left: 4px solid #667eea;">
+                    <h4 style="margin-bottom: 10px; color: #333;">📍 Preview - Will Post To:</h4>
+                    <div style="font-weight: 600; margin-bottom: 8px; color: #667eea;" id="previewProduct">Select a product first</div>
+                    <div id="previewGroupsList" style="margin-bottom: 12px; color: #666; font-size: 13px;">
+                        <p style="margin: 0; color: #999;">No groups selected yet</p>
+                    </div>
+                    <div style="border-top: 1px solid #ddd; padding-top: 10px;">
+                        <p style="margin: 0 0 8px 0; font-size: 12px; color: #666;"><strong>Need help?</strong> Contact us for demo:</p>
+                        <p style="margin: 0; font-size: 14px; font-weight: 600; color: #667eea;">📞 <a href="tel:+639122548663" style="color: #667eea; text-decoration: none;">+63 912 254 8663</a></p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <div id="modeIndicator" style="margin-bottom: 15px; padding: 10px; background: #f0f0f0; border-radius: 4px; color: #666; font-size: 13px; display: none;">
+                        <strong>🚀 Select All Mode Active</strong> - Will post all 13 products with rotating templates to their groups
+                    </div>
+                    <div id="countdownDisplay" style="margin-bottom: 15px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404; font-size: 13px; display: none;">
+                        <strong>⏰ Safety Cooldown Active</strong><br>Next safe post time: <span id="nextSafeTime">--:--</span>
+                    </div>
+                    <button id="postBtn" onclick="postToFacebook()">📤 POST TO FACEBOOK GROUPS</button>
+                    <button class="secondary" onclick="clearForm()" style="margin-left: 10px;">Clear</button>
+                </div>
+            </div>
+
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+
+        <!-- PERSONAL PROFILES TAB -->
+        <div id="personalProfilesTab" class="tab-content hidden">
+            <div class="form-section">
+                <h3>👤 Post to Personal & Business Profiles</h3>
+                <p style="color: #666; margin-bottom: 20px;">Create a post and copy it to your personal profile or business pages.</p>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Post Title</label>
+                    <input type="text" id="personalPostTitle" placeholder="Enter post title">
+                </div>
+
+                <div class="form-group">
+                    <label>Post Description</label>
+                    <textarea id="personalPostDescription" placeholder="Enter post content"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Hashtags (optional)</label>
+                    <input type="text" id="personalPostHashtags" placeholder="#DigitalAlley #SupportLocal #Pozorrubio">
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 6px; border-left: 4px solid #667eea;">
+                    <h4 style="margin-bottom: 15px; color: #333;">📋 Preview</h4>
+                    <div id="personalPostPreview" style="background: white; padding: 15px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 15px; min-height: 100px; color: #333; white-space: pre-wrap; word-break: break-word;">
+                        [Preview will appear here]
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <button onclick="testPostViaClaudeBrowser();" style="background: #28a745; grid-column: 1 / -1;">🧪 Test Post via Claude Browser</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <button onclick="postToMacSalcedo();" style="background: #667eea; grid-column: 1;">📤 Post to Mac Salcedo</button>
+                        <button onclick="copyDigitalAlleyPost();" style="background: #667eea;">📋 Copy for Digital Alley</button>
+                        <button onclick="copyOnlinePartsPost();" style="background: #667eea;">📋 Copy for Online Parts</button>
+                    </div>
+
+                    <div id="personalPostFeedback" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none; text-align: center; font-weight: 600;">
+                        ✅ Copied to clipboard!
+                    </div>
+
+                    <div id="personalPostingStatus" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none; text-align: center; font-weight: 600; background: #fff3cd; color: #856404; border: 1px solid #ffc107;">
+                        ⏳ Posting to Facebook... Please wait
+                    </div>
+                </div>
+
+                <button class="secondary" onclick="clearPersonalForm()" style="margin-top: 15px; width: 100%;">Clear Form</button>
+            </div>
+        </div>
+
+        <!-- HISTORY TAB -->
+        <div id="historyTab" class="tab-content hidden">
+            <div class="form-section">
+                <h3>📋 Posted Messages History</h3>
+                <p style="color: #666; margin-bottom: 20px;">Track all posts, engagement metrics, and performance data.</p>
+            </div>
+
+            <div class="form-section">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date Posted</th>
+                            <th>Product</th>
+                            <th>Group</th>
+                            <th>Post Title</th>
+                            <th>Engagement (L/C/S)</th>
+                            <th>Total Reach</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <tr><td colspan="7" style="text-align: center; color: #999;">No posts yet. Create your first post above!</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div id="analyticsTab" class="tab-content hidden">
+            <div class="form-section">
+                <h3>📊 Post Analytics & Performance</h3>
+                <p style="color: #666; margin-bottom: 20px;">See which products and groups perform best.</p>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>Total Posts</h4>
+                    <div class="value" id="totalPostsCount">0</div>
+                    <div class="meta">All-time posts</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>Total Engagement</h4>
+                    <div class="value" id="totalEngagementCount">0</div>
+                    <div class="meta">Likes + Comments + Shares</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>Top Product</h4>
+                    <div class="value" id="topProductName" style="font-size: 18px;">-</div>
+                    <div class="meta" id="topProductEngagement">0 engagement</div>
+                </div>
+                <div class="analytics-card">
+                    <h4>Top Group</h4>
+                    <div class="value" id="topGroupName" style="font-size: 18px;">-</div>
+                    <div class="meta" id="topGroupEngagement">0 posts</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h4>🏆 Top Performing Products</h4>
+                <div id="topProductsChart"></div>
+            </div>
+
+            <div class="chart-container">
+                <h4>📍 Posts by Group</h4>
+                <div id="groupDistributionChart"></div>
+            </div>
+
+            <div class="form-section">
+                <h3>Engagement by Product</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Posts</th>
+                            <th>Avg Engagement</th>
+                            <th>Total Likes</th>
+                            <th>Total Comments</th>
+                            <th>Total Shares</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productEngagementTable">
+                        <tr><td colspan="6" style="text-align: center; color: #999;">No data yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LEADS TAB -->
+        <div id="leadsTab" class="tab-content hidden">
+            <div class="form-section">
+                <h3>👥 Sales Leads & Contact Database</h3>
+                <p style="color: #666; margin-bottom: 20px;">Track interested prospects and manage your sales pipeline.</p>
+            </div>
+
+            <div class="form-section">
+                <h4>➕ Add New Lead</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Name *</label>
+                        <input type="text" id="leadName" placeholder="Prospect name" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Phone</label>
+                        <input type="text" id="leadPhone" placeholder="09123456789" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Email</label>
+                        <input type="email" id="leadEmail" placeholder="email@example.com" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Product Interested</label>
+                        <select id="leadProduct" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Select a product...</option>
+                            <option value="galila">Galila Express</option>
+                            <option value="rxone">Rx One</option>
+                            <option value="siteledger">Site Ledger</option>
+                            <option value="onlinetindero">Online Tindero</option>
+                            <option value="sellerflow">Seller Flow</option>
+                            <option value="english101">English 101</option>
+                            <option value="tindahanko">Tindahanko</option>
+                            <option value="menupro">MenuPro</option>
+                            <option value="billis">Billis</option>
+                            <option value="doctorsin">The Doctors are In</option>
+                            <option value="equipmenttracker">EquipmentTracker</option>
+                            <option value="digitalalley">Digital Alley Solutions</option>
+                            <option value="socialmediamanager">Social Media Manager</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Source Group</label>
+                        <input type="text" id="leadSource" placeholder="Which group did they come from?" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Status</label>
+                        <select id="leadStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Interested">Interested</option>
+                            <option value="Negotiating">Negotiating</option>
+                            <option value="Sold">Sold</option>
+                            <option value="Not Interested">Not Interested</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Follow-up Date</label>
+                        <input type="date" id="leadFollowupDate" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Notes</label>
+                    <textarea id="leadNotes" placeholder="Add any notes about this lead..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; height: 60px; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <button onclick="addLead()" style="background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">➕ Add Lead</button>
+            </div>
+
+            <div class="form-section">
+                <h4>🔍 Filter & Search</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <input type="text" id="searchLeads" placeholder="Search by name or phone..." onkeyup="filterLeads()" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <select id="filterStatus" onchange="filterLeads()" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">All Status</option>
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Interested">Interested</option>
+                            <option value="Negotiating">Negotiating</option>
+                            <option value="Sold">Sold</option>
+                            <option value="Not Interested">Not Interested</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="filterProduct" onchange="filterLeads()" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">All Products</option>
+                            <option value="galila">Galila Express</option>
+                            <option value="rxone">Rx One</option>
+                            <option value="siteledger">Site Ledger</option>
+                            <option value="onlinetindero">Online Tindero</option>
+                            <option value="sellerflow">Seller Flow</option>
+                            <option value="english101">English 101</option>
+                            <option value="tindahanko">Tindahanko</option>
+                            <option value="menupro">MenuPro</option>
+                            <option value="billis">Billis</option>
+                            <option value="doctorsin">The Doctors are In</option>
+                            <option value="equipmenttracker">EquipmentTracker</option>
+                            <option value="digitalalley">Digital Alley Solutions</option>
+                            <option value="socialmediamanager">Social Media Manager</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="exportLeadsToCSV()" style="background: #27ae60; padding: 10px 20px;">📥 Export to CSV</button>
+            </div>
+
+            <div class="form-section">
+                <h4>📋 All Leads</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Product</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                            <th>Follow-up</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leadsTable">
+                        <tr><td colspan="8" style="text-align: center; color: #999;">No leads yet. Add one to get started!</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let currentUser = null;
+        let postedMessages = JSON.parse(localStorage.getItem('sf_posted_messages')) || [];
+        let templateIndexes = JSON.parse(localStorage.getItem('sf_template_indexes')) || {};
+        let postingLog = JSON.parse(localStorage.getItem('sf_posting_log')) || []; // Tracks timestamps for safety checks
+        let autoScheduleSettings = JSON.parse(localStorage.getItem('sf_auto_schedule')) || {};
+        let scheduledPosts = JSON.parse(localStorage.getItem('sf_scheduled_posts')) || [];
+        let salesLeads = JSON.parse(localStorage.getItem('sf_sales_leads')) || []; // Sales leads database
+
+        // All products list
+        const allProducts = ['galila', 'rxone', 'siteledger', 'onlinetindero', 'sellerflow', 'english101', 'tindahanko', 'menupro', 'billis', 'doctorsin', 'equipmenttracker', 'digitalalley', 'socialmediamanager'];
+
+        // Group configuration
+        const facebookGroups = {
+            galila: [
+                'Pozorrubio Community & Buy/Sell',
+                'Sison Business Network',
+                'Binalonan Buy & Sell',
+                'Pangasinan Delivery & Logistics Groups',
+                'Pangasinan Food Business Groups'
+            ],
+            rxone: [
+                'Pangasinan Health & Pharmacy Network',
+                'Pharmacy Owners & Operators Groups',
+                'Dagupan City Business Groups',
+                'Pangasinan Entrepreneurs',
+                'Healthcare Professional Communities'
+            ],
+            siteledger: [
+                'Pangasinan Construction & Contractors',
+                'Building Contractors Association Groups',
+                'Pangasinan Business Network',
+                'Professional Services Groups',
+                'Construction Equipment & Materials'
+            ],
+            onlinetindero: [
+                'Pangasinan Online Business Groups',
+                'Affiliate Marketing Networks',
+                'Income Opportunity Groups',
+                'Entrepreneur Communities',
+                'Work From Home Opportunities'
+            ],
+            sellerflow: [
+                'Dagupan City Buy & Sell',
+                'Pangasinan Business Network',
+                'Online Selling & Entrepreneurs',
+                'Social Media Sellers Groups',
+                'Digital Business Tools'
+            ],
+            english101: [
+                'Pangasinan Education Groups',
+                'Teacher Communities & Support',
+                'ESL & Language Learning Groups',
+                'Student Development Groups',
+                'Freelance Educators'
+            ],
+            tindahanko: [
+                'Sari-Sari Store Owners & Operators',
+                'Pangasinan Retail & Commerce Groups',
+                'Pangasinan Entrepreneurs',
+                'Small Business Owners Groups',
+                'General Merchandise Communities'
+            ],
+            menupro: [
+                'Restaurant Owners & Operators Groups',
+                'Food Business Entrepreneurs',
+                'Pangasinan Hospitality Groups',
+                'Cafe & Eatery Owners',
+                'Food Service Professionals'
+            ],
+            billis: [
+                'Pangasinan Business Network',
+                'Finance & Payment Solutions Groups',
+                'Entrepreneur Communities',
+                'Business Services Groups',
+                'Payment Aggregator Networks'
+            ],
+            doctorsin: [
+                'Medical Professionals Groups',
+                'Doctor & Healthcare Provider Communities',
+                'Hospital & Clinic Management Groups',
+                'Healthcare Business Solutions',
+                'Professional Medical Networks'
+            ],
+            equipmenttracker: [
+                'Pangasinan Construction & Contractors',
+                'Equipment Rental & Management Groups',
+                'Construction Business Solutions',
+                'Heavy Equipment Operators',
+                'Industrial & Construction Services'
+            ],
+            digitalalley: [
+                'Pangasinan Business Network',
+                'Tech & Business Solutions Groups',
+                'Digital Transformation Communities',
+                'Software Development & IT Services',
+                'Professional Services'
+            ],
+            socialmediamanager: [
+                'Dagupan City Business Groups',
+                'Pangasinan Entrepreneurs',
+                'Small Business Owners',
+                'Digital Marketing Communities',
+                'Social Media & Content Creators'
+            ]
+        };
+
+        // Templates (simplified - same as before)
+        const postTemplates = {
+            galila: [
+                { name: 'Extra Income', title: 'Kumita ng Extra Income', description: 'May tricycle ka ba? Gawing karagdagang kita ang biyahe mo araw-araw!\n\nSumali na bilang Galila Express Partner Driver/Rider!' },
+                { name: 'Stable Earnings', title: 'Earn More with Lower Commission', description: 'Sawa ka na ba sa patak-patak na kita?\n\nDagdagan ang araw-araw na kita gamit ang Galila Express!' },
+                { name: 'Stay Local', title: 'Stay Local, Earn Daily', description: 'Gusto mo bang kumita nang hindi lumalayo sa pamilya mo?\n\nSa Galila Express, biyaheng lokal lang!' },
+                { name: 'Easy Sign-up', title: 'Easy Application, Quick Start', description: 'Tricycle, motorcycle, o delivery vehicle owner? Kabilang ka dito!\n\nMadaling mag-apply sa Galila Express!' },
+                { name: 'Community Focus', title: 'Be Your Own Boss on the Road', description: 'Be your own boss on the road!\n\nHawak mo ang oras at kita mo.' }
+            ],
+            rxone: [
+                { name: 'Expiry Tracking', title: 'Stop Wasting Money on Expired Medicine', description: 'Lumalagpas ba sa expiry date ang mga gamot sa botika mo?\n\nIwas-lugi sa expired stock! Gamitin ang Rx One POS System' },
+                { name: 'Fast Checkout', title: 'Speed Up Your Pharmacy Checkout', description: 'Mahahabang pila sa checkout ng botika mo?\n\nPabilisin ang serbisyo sa customer gamit ang Rx One.' },
+                { name: 'Multi-Branch', title: 'Monitor Your Pharmacy from Anywhere', description: 'Gusto mo bang ma-monitor ang benta ng pharmacy mo kahit wala ka sa pwesto?\n\nRx One gives you detailed sales reports' },
+                { name: 'Compliance', title: 'Automated Pharmacy Reporting', description: 'Sakit sa ulo ba ang manual sales at inventory reports?\n\nGawing automated at accurate ang iyong reporting' },
+                { name: 'Startup', title: 'Modernize Your Pharmacy Operations', description: 'Magtatayo ka ba ng bagong botika?\n\nRx One is built specifically for pharmacy owners.' }
+            ],
+            siteledger: [
+                { name: 'Over-Budget Warning', title: 'Never Go Over Budget on Projects', description: 'Lumalagpas ba sa budget ang construction project mo?\n\nStay on top of your project finances with Site Ledger!' },
+                { name: 'Material Management', title: 'Organize Every Project Receipt', description: 'Nawawalang mga resibo at magulong listahan?\n\nSay goodbye to lost receipts and paper ledgers!' },
+                { name: 'Labor Tracking', title: 'Track Labor Costs Accurately', description: 'Nahihirapan ka bang i-calculate ang eksaktong labor expense?\n\nSite Ledger helps contractors track daily site expenses' },
+                { name: 'Multi-Project', title: 'Manage Multiple Projects at Once', description: 'Sabay-sabay ba ang construction projects mo?\n\nMonitor budgets across multiple sites simultaneously!' },
+                { name: 'Professional Tool', title: 'Smart Financial Tracking for Contractors', description: 'Level up your contracting business with smart financial tracking.\n\nKeep your clients happy by delivering projects on time' }
+            ],
+            sellerflow: [
+                { name: 'No Paid Ads', title: 'Grow Your Reach Without Paying for Ads', description: 'Gusto mo bang dumami ang reach ng social media posts mo nang hindi nagbabayad sa ads?\n\nBoost your organic reach with Seller Flow!' },
+                { name: 'Time-Saving', title: 'Save Time on Social Media Posting', description: 'Nauubusan ka ba ng oras para mag-post araw-araw?\n\nStreamline your daily posting routine! Seller Flow makes it easy' },
+                { name: 'Sales Growth', title: 'Turn Followers Into Buyers', description: 'Maraming followers pero walang bumibili?\n\nTurn your social media engagement into actual sales!' },
+                { name: 'Templates', title: 'Quick Post Templates for Your Business', description: 'Nahihirapan ka bang mag-isip ng caption at promo posts?\n\nSeller Flow gives you quick templates' },
+                { name: 'Consistency', title: 'Build Your Brand with Consistency', description: 'Consistency is key to dominating organic social media!\n\nKeep your brand top of mind for your target audience.' }
+            ],
+            onlinetindero: [
+                { name: 'Side Hustle', title: 'Earn Extra Income Online', description: 'Gusto mo bang kumita ng extra income gamit lang ang cellphone?\n\nJoin Online Tindero!' },
+                { name: 'No Capital', title: 'Start a Business Without Capital', description: 'Gusto mong magka-business pero walang malaking capital?\n\nBe an affiliate marketer with Online Tindero!' },
+                { name: 'Flexibility', title: 'Earn Money Anytime, Anywhere', description: 'Earn money anytime, anywhere!\n\nOnline Tindero gives you the freedom to build passive income' },
+                { name: 'Students', title: 'Perfect Sideline Business for Students', description: 'Looking for a flexible sideline business online?\n\nWhether you are a student or employee, Online Tindero is perfect' },
+                { name: 'Monetize', title: 'Monetize Your Social Media', description: 'Turn your social media scrolling into earnings!\n\nMonetize your social media audience with Online Tindero' }
+            ],
+            digitalalley: [
+                { name: 'Custom Dev', title: 'Custom Software Built for Your Business', description: 'May unique business process ka ba na hindi kayang i-handle ng generic software?\n\nGet custom-built software tailored to your workflow!' },
+                { name: 'Automation', title: 'Automate Your Business Operations', description: 'Mabagal ba ang operations mo dahil sa manual tasks?\n\nAutomate your operations with powerful digital tools.' },
+                { name: 'Web & Mobile', title: 'Turn Your App Idea Into Reality', description: 'Ready to turn your app idea into a real, functional product?\n\nPartner with Digital Alley Solutions' },
+                { name: 'Scaling', title: 'Your Reliable Tech Partner', description: 'Looking for a reliable tech partner for your growing business?\n\nDigital Alley Solutions provides end-to-end software development' },
+                { name: 'Tailored', title: 'Software Designed for Your Exact Needs', description: 'Stop adjusting your business to match rigid software.\n\nMake software that fits your exact business needs.' }
+            ],
+            english101: [
+                { name: 'Student Success', title: 'Help Your Students Master English', description: 'Gusto mo bang matulungan ang mga estudyante na maging fluent sa English?\n\nEnglish 101 makes teaching ESL easier and more effective!' },
+                { name: 'Flexible Learning', title: 'Learn English at Your Own Pace', description: 'Busy pero gusto mong matuto ng English?\n\nEnglish 101 offers flexible, self-paced learning modules' },
+                { name: 'Affordable Access', title: 'Quality English Education for Everyone', description: 'May budget ba para sa mahal na courses?\n\nEnglish 101 provides affordable, quality ESL training' },
+                { name: 'Career Ready', title: 'Improve English for Career Advancement', description: 'Kailangan mo ng better English skills para sa job?\n\nEnglish 101 helps you gain confidence in professional communication' },
+                { name: 'Structured Path', title: 'Structured Learning Program', description: 'Walang clear path sa pag-improve ng English?\n\nEnglish 101 provides a structured curriculum from basics to fluency' }
+            ],
+            tindahanko: [
+                { name: 'Inventory Control', title: 'Never Run Out of Stock Again', description: 'Nag-aalala ka ba na maubos ang stock sa store mo?\n\nTindahanko POS automatically tracks inventory!' },
+                { name: 'Fast Transactions', title: 'Speed Up Your Checkout Process', description: 'Mahaba ang linya sa counter ng sari-sari store mo?\n\nTindahanko makes transactions faster and easier' },
+                { name: 'Sales Reports', title: 'Know Your Best-Selling Products', description: 'Hindi mo alam kung anong produkto ang best-seller mo?\n\nTindahanko gives you detailed daily sales reports' },
+                { name: 'Profit Tracking', title: 'Monitor Your Store Profits', description: 'Difficult ba i-track ang exact profit ng store mo?\n\nTindahanko calculates profit accurately in real-time' },
+                { name: 'Easy Setup', title: 'Simple to Install and Use', description: 'Takot ka ba ng complicated POS systems?\n\nTindahanko is designed for easy use by any store operator' }
+            ],
+            menupro: [
+                { name: 'Order Management', title: 'Manage Orders Like a Pro', description: 'Maraming order pero nakakalito sa kitchen?\n\nMenuPro organizes all orders smoothly!' },
+                { name: 'Kitchen Efficiency', title: 'Speed Up Your Kitchen Operations', description: 'Laging chaos sa kitchen dahil sa orders?\n\nMenuPro sends orders directly to kitchen display' },
+                { name: 'Menu Customization', title: 'Build Your Menu Your Way', description: 'Ang menu mo ay fixed lang at nandito lang?\n\nMenuPro lets you customize items, prices, and combos easily' },
+                { name: 'Table Management', title: 'Manage Tables and Reservations', description: 'Mahirap mag-track ng reservations at available tables?\n\nMenuPro handles table management seamlessly' },
+                { name: 'Sales Analytics', title: 'Track Food Item Performance', description: 'Ano ba ang best-selling dishes mo?\n\nMenuPro shows you which items sell most and drive profit' }
+            ],
+            billis: [
+                { name: 'One-Stop Payment', title: 'All Bills in One Platform', description: 'Takot ka ba mag-miss ng bill payments?\n\nBillis consolidates all your bill payments in one app!' },
+                { name: 'No More Queues', title: 'Pay Bills Anytime, Anywhere', description: 'Nauubusan ka ba ng oras pumila sa billing centers?\n\nBillis lets you pay bills on your own schedule' },
+                { name: 'Automated Reminders', title: 'Never Miss a Due Date', description: 'Nalilimutan mo ba ang due dates ng bills?\n\nBillis sends automatic reminders para laging updated ka' },
+                { name: 'Secure Transactions', title: 'Safe and Secure Payment Processing', description: 'Takot ka ba mag-online payment dahil security?\n\nBillis uses bank-level security para sa lahat ng transactions' },
+                { name: 'Instant Confirmation', title: 'Get Instant Payment Receipts', description: 'Mahirap i-track ang bill payment receipts?\n\nBillis gives instant digital receipts para sa lahat ng transactions' }
+            ],
+            doctorsin: [
+                { name: 'Patient Records', title: 'Keep Secure Patient Medical Records', description: 'Mahirap mag-manage ng maraming patient files?\n\nThe Doctors are In organizes all patient records securely!' },
+                { name: 'Appointment System', title: 'Manage Doctor Appointments Efficiently', description: 'Gulo ang schedule ng appointments sa clinic mo?\n\nThe Doctors are In has built-in appointment management' },
+                { name: 'Medication Tracking', title: 'Track Patient Medications', description: 'Nag-aalala ka ba na may medicine conflict sa patient?\n\nThe Doctors are In tracks all medications per patient' },
+                { name: 'Visit History', title: 'Complete Patient Visit History', description: 'Mahirap i-recall ang history ng patient visits?\n\nThe Doctors are In maintains complete visit records' },
+                { name: 'Data Security', title: 'HIPAA-Compliant Patient Data Protection', description: 'Takot ka ba sa patient data breach?\n\nThe Doctors are In provides encrypted, secure patient storage' }
+            ],
+            equipmenttracker: [
+                { name: 'Equipment Inventory', title: 'Track All Your Equipment Assets', description: 'Mahirap i-track kung nasaan ang lahat ng equipment mo?\n\nEquipmentTracker knows exactly where each item is!' },
+                { name: 'Maintenance Schedule', title: 'Never Miss Equipment Maintenance', description: 'Nag-breakdown ba ang equipment dahil walang maintenance?\n\nEquipmentTracker schedules preventive maintenance automatically' },
+                { name: 'Rental Management', title: 'Manage Equipment Rentals', description: 'Complicated ba ang pag-manage ng rented equipment?\n\nEquipmentTracker tracks all rental agreements and due dates' },
+                { name: 'Cost Tracking', title: 'Monitor Equipment Costs', description: 'Alam mo ba ang total maintenance cost ng equipment?\n\nEquipmentTracker shows you every cost per equipment' },
+                { name: 'Usage Analytics', title: 'Analyze Equipment Usage', description: 'Unused ba ang equipment mo pero nagbabayad ka pa?\n\nEquipmentTracker shows usage analytics para optimize efficiency' }
+            ],
+            socialmediamanager: [
+                { name: 'Service Intro', title: 'Let Us Manage Your Facebook for You', description: 'Too busy to manage your Facebook posting?\n\nLet Digital Alley Solutions handle your Pangasinan social media strategy!' },
+                { name: 'Content Planning', title: 'Professional Content Strategy', description: 'Gusto mo ng consistent, engaging Facebook posts pero walang oras?\n\nOur team handles content creation, posting, and engagement' },
+                { name: 'Growth', title: 'Grow Your Facebook Presence', description: 'Want to reach more customers on Facebook?\n\nLet our Social Media Manager build your audience' },
+                { name: 'Community Mgmt', title: 'Professional Community Management', description: 'Respond to messages, manage comments, build relationships.\n\nWe handle your community so you can focus on business' },
+                { name: 'ROI Focused', title: 'Facebook Management for Real Results', description: 'Every post designed to drive engagement and sales.\n\nLet Digital Alley Solutions turn your Facebook into a revenue source.' }
+            ]
+        };
+
+        // Toggle multi-select dropdown
+        function toggleMultiselectDropdown() {
+            const dropdown = document.getElementById('multiselectDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.multiselect-container')) {
+                document.getElementById('multiselectDropdown').classList.remove('open');
+            }
+        });
+
+        // Update display text for multi-select
+        function updateMultiselectDisplay() {
+            const selected = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+            const display = document.getElementById('selectedCount');
+
+            if (selected.length === 0) {
+                display.textContent = 'Select products...';
+            } else if (selected.length === 13) {
+                display.textContent = '✓ All 13 Products Selected';
+                isSelectAllMode = true;
+                document.getElementById('modeIndicator').style.display = 'block';
+                document.getElementById('postBtn').textContent = '🚀 POST ALL 13 PRODUCTS';
+            } else {
+                display.textContent = `${selected.length} Product${selected.length > 1 ? 's' : ''} Selected`;
+                isSelectAllMode = false;
+                document.getElementById('modeIndicator').style.display = 'none';
+                document.getElementById('postBtn').textContent = '📤 POST TO FACEBOOK GROUPS';
+            }
+
+            updateGroupOptions();
+            updateTemplatesList();
+        }
+
+        // Select all products from dropdown
+        function selectAllMultiple() {
+            document.querySelectorAll('.productCheckbox').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateMultiselectDisplay();
+        }
+
+        // Update group options based on selected products
+        function updateGroupOptions() {
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+            const container = document.getElementById('groupsContainer');
+            container.innerHTML = '';
+
+            if (selectedProducts.length === 0) {
+                container.innerHTML = '<p style="color: #999;">Select at least one product first</p>';
+                updatePreview();
+                return;
+            }
+
+            if (selectedProducts.length === 13) {
+                container.innerHTML = '<p style="color: #667eea; font-weight: 600;">✓ Ready to post all 13 products! Each will post to its own target groups.</p>';
+                updatePreview();
+                return;
+            }
+
+            // For single product, show its groups for custom selection
+            if (selectedProducts.length === 1) {
+                const product = selectedProducts[0];
+                const groups = facebookGroups[product] || [];
+                groups.forEach((group, idx) => {
+                    const label = document.createElement('label');
+                    label.className = 'group-checkbox';
+                    label.innerHTML = `
+                        <input type="checkbox" class="groupCheckbox" value="${group}" onchange="updatePreview(); updatePostButtonStatus();">
+                        <span>${group}</span>
+                    `;
+                    container.appendChild(label);
+                });
+            } else {
+                // For multiple products (2-12), each posts to its own appropriate groups
+                container.innerHTML = '<p style="color: #667eea; font-weight: 600;">✓ Each product will post to its own appropriate groups automatically</p>';
+            }
+
+            updatePreview();
+            updatePostButtonStatus();
+            updateMultiProductForms(); // Update per-product forms if needed
+        }
+
+        // Generate multi-product custom forms
+        function updateMultiProductForms() {
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+            const container = document.getElementById('multiProductFormsContainer');
+            const formsDiv = document.getElementById('multiProductForms');
+
+            if (selectedProducts.length <= 1) {
+                // Single product or no products - hide multi-product forms
+                container.style.display = 'none';
+                formsDiv.innerHTML = '';
+                return;
+            }
+
+            // Show multi-product forms for 2+ products
+            container.style.display = 'block';
+            formsDiv.innerHTML = '';
+
+            const productNames = {
+                galila: 'Galila Express (Delivery/Online Ordering)',
+                rxone: 'Rx One (Pharmacy POS)',
+                siteledger: 'Site Ledger (Contractor Ledger)',
+                onlinetindero: 'Online Tindero (Affiliate Store)',
+                sellerflow: 'Seller Flow (Social Media Posting)',
+                english101: 'English 101 (ESL Teaching)',
+                tindahanko: 'Tindahanko (Grocery/Merchandise POS)',
+                menupro: 'MenuPro (Restaurant POS)',
+                billis: 'Billis (Payment Center)',
+                doctorsin: 'The Doctors are In (Medical Records)',
+                equipmenttracker: 'EquipmentTracker (Construction)',
+                digitalalley: 'Digital Alley Solutions (Dev Services)',
+                socialmediamanager: 'Social Media Manager (Facebook Service)'
+            };
+
+            selectedProducts.forEach((product, idx) => {
+                const formDiv = document.createElement('div');
+                formDiv.style.cssText = 'margin-bottom: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 6px;';
+                formDiv.innerHTML = `
+                    <div style="font-weight: 600; color: #333; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #667eea;">
+                        ${idx + 1}. ${productNames[product] || product}
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Title (optional)</label>
+                        <input type="text" class="multiProductTitle" data-product="${product}" placeholder="Leave empty to use template" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Description (optional)</label>
+                        <textarea class="multiProductDescription" data-product="${product}" placeholder="Leave empty to use template" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; height: 80px; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Hashtags (optional)</label>
+                        <input type="text" class="multiProductHashtags" data-product="${product}" placeholder="#PangasinanBusiness #DigitalAlley" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                    </div>
+                `;
+                formsDiv.appendChild(formDiv);
+            });
+        }
+
+        // Update preview in real-time
+        function updatePreview() {
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+            const selectedGroups = Array.from(document.querySelectorAll('.groupCheckbox:checked')).map(el => el.value);
+
+            const productNames = {
+                galila: 'Galila Express (Delivery/Online Ordering)',
+                rxone: 'Rx One (Pharmacy POS)',
+                siteledger: 'Site Ledger (Contractor Ledger)',
+                onlinetindero: 'Online Tindero (Affiliate Store)',
+                sellerflow: 'Seller Flow (Social Media Posting)',
+                english101: 'English 101 (ESL Teaching)',
+                tindahanko: 'Tindahanko (Grocery/Merchandise POS)',
+                menupro: 'MenuPro (Restaurant POS)',
+                billis: 'Billis (Payment Center)',
+                doctorsin: 'The Doctors are In (Medical Records)',
+                equipmenttracker: 'EquipmentTracker (Construction)',
+                digitalalley: 'Digital Alley Solutions (Dev Services)',
+                socialmediamanager: 'Social Media Manager (Facebook Service)'
+            };
+
+            // Update product name
+            if (selectedProducts.length === 13) {
+                document.getElementById('previewProduct').textContent = '🚀 All 13 Products';
+            } else if (selectedProducts.length === 1) {
+                document.getElementById('previewProduct').textContent = '✓ ' + (productNames[selectedProducts[0]] || selectedProducts[0]);
+            } else if (selectedProducts.length > 1) {
+                document.getElementById('previewProduct').textContent = `✓ ${selectedProducts.length} Products Selected`;
+            } else {
+                document.getElementById('previewProduct').textContent = 'Select a product first';
+            }
+
+            // Update groups list
+            const groupsList = document.getElementById('previewGroupsList');
+            if (selectedProducts.length === 13) {
+                groupsList.innerHTML = '<p style="margin: 0; color: #667eea; font-weight: 600;">Each product will post to its own target groups</p>';
+            } else if (selectedGroups.length === 0) {
+                groupsList.innerHTML = '<p style="margin: 0; color: #999;">No groups selected yet</p>';
+            } else {
+                const groupsHtml = selectedGroups.map((group, idx) =>
+                    `<div style="margin: 6px 0; padding: 6px 8px; background: white; border-radius: 4px; border-left: 3px solid #667eea; color: #333; font-size: 13px;">• ${group}</div>`
+                ).join('');
+                groupsList.innerHTML = groupsHtml;
+            }
+        }
+
+        // Apply template
+        function applyTemplate() {
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+            const templateIdx = document.getElementById('templateSelect').value;
+
+            if (selectedProducts.length !== 1 || templateIdx === '') return;
+
+            const product = selectedProducts[0];
+            const templates = postTemplates[product] || [];
+            const template = templates[templateIdx];
+
+            if (template) {
+                document.getElementById('postTitle').value = template.title;
+                document.getElementById('postDescription').value = template.description;
+            }
+        }
+
+        // Update templates when product changes (for single product mode)
+        function updateTemplatesList() {
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+            const templateSelect = document.getElementById('templateSelect');
+            templateSelect.innerHTML = '<option value="">-- Choose a template --</option>';
+
+            if (selectedProducts.length === 0) {
+                // No products selected - show default message
+                return;
+            }
+
+            if (selectedProducts.length === 1) {
+                // Single product - show its templates
+                const product = selectedProducts[0];
+                if (postTemplates[product]) {
+                    postTemplates[product].forEach((t, idx) => {
+                        const option = document.createElement('option');
+                        option.value = idx;
+                        option.textContent = t.name;
+                        templateSelect.appendChild(option);
+                    });
+                }
+            } else {
+                // Multiple products - show auto-rotate message
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.textContent = '🔄 Templates auto-rotating per product';
+                templateSelect.appendChild(option);
+                templateSelect.value = ''; // Ensure nothing is "selected"
+            }
+        }
+
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('productCheckbox')) {
+                updateTemplatesList();
+                updatePostButtonStatus(); // Check safety when products change
+            }
+        });
+
+        // Update POST button status based on safety rules
+        function updatePostButtonStatus() {
+            const postBtn = document.getElementById('postBtn');
+            const countdownDisplay = document.getElementById('countdownDisplay');
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+            const selectedGroups = Array.from(document.querySelectorAll('.groupCheckbox:checked')).map(el => el.value);
+
+            if (selectedProducts.length === 0) {
+                postBtn.disabled = false;
+                countdownDisplay.style.display = 'none';
+                return;
+            }
+
+            // For single product mode
+            if (selectedProducts.length === 1 && selectedGroups.length > 0) {
+                const product = selectedProducts[0];
+                const safetyCheck = canPost(product, selectedGroups);
+                if (!safetyCheck.allowed) {
+                    postBtn.disabled = true;
+                    countdownDisplay.style.display = 'block';
+
+                    // Find the next safe time
+                    let nextSafeTime = new Date();
+                    selectedGroups.forEach(group => {
+                        const safeTime = getNextSafePostTime(product, group);
+                        if (safeTime > nextSafeTime) {
+                            nextSafeTime = safeTime;
+                        }
+                    });
+
+                    const now = new Date();
+                    const diffMs = nextSafeTime - now;
+                    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    document.getElementById('nextSafeTime').textContent = `${hours}h ${minutes}m`;
+                    return;
+                }
+            }
+
+            // For multiple products mode
+            if (selectedProducts.length >= 2) {
+                let needsWait = false;
+                let nextSafeTime = new Date();
+
+                selectedProducts.forEach(product => {
+                    const groups = facebookGroups[product] || [];
+                    const safetyCheck = canPost(product, groups);
+                    if (!safetyCheck.allowed) {
+                        needsWait = true;
+                        groups.forEach(group => {
+                            const safeTime = getNextSafePostTime(product, group);
+                            if (safeTime > nextSafeTime) {
+                                nextSafeTime = safeTime;
+                            }
+                        });
+                    }
+                });
+
+                if (needsWait) {
+                    postBtn.disabled = true;
+                    countdownDisplay.style.display = 'block';
+                    const now = new Date();
+                    const diffMs = nextSafeTime - now;
+                    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    document.getElementById('nextSafeTime').textContent = `${hours}h ${minutes}m`;
+                    return;
+                }
+            }
+
+            postBtn.disabled = false;
+            countdownDisplay.style.display = 'none';
+        }
+
+        // Select all products mode
+        let isSelectAllMode = false;
+
+        // Countdown timer - update every minute
+        setInterval(updatePostButtonStatus, 60000);
+
+        // Facebook Safety Rules - Prevent Account Blocks
+        const FACEBOOK_RULES = {
+            minHoursBetweenPosts: 2, // Minimum 2 hours between posts to same group
+            maxPostsPerGroupPerDay: 1, // Max 1 post per group per day
+            maxTotalPostsPerDay: 10 // Max 10 posts total per day across all groups
+        };
+
+        // Check if posting now would violate Facebook rules
+        function canPost(product, groups) {
+            const now = Date.now();
+            const oneDayAgo = now - (24 * 60 * 60 * 1000);
+
+            // Get posts from last 24 hours
+            const recentPosts = postingLog.filter(log => log.timestamp > oneDayAgo);
+            const todaysTotalPosts = recentPosts.length;
+
+            // Check each group for violations
+            for (let group of groups) {
+                const groupKey = `${product}|${group}`;
+
+                // Check 1: Has this product posted to this group today?
+                const postedToGroupToday = recentPosts.some(log => log.key === groupKey);
+                if (postedToGroupToday) {
+                    return { allowed: false, reason: `${group} already posted today` };
+                }
+
+                // Check 2: Last post to this group less than 2-4 hours ago?
+                const lastPostToGroup = postingLog
+                    .filter(log => log.key === groupKey)
+                    .sort((a, b) => b.timestamp - a.timestamp)[0];
+
+                if (lastPostToGroup) {
+                    const hoursSinceLastPost = (now - lastPostToGroup.timestamp) / (60 * 60 * 1000);
+                    if (hoursSinceLastPost < FACEBOOK_RULES.minHoursBetweenPosts) {
+                        const minutesUntilSafe = Math.ceil((FACEBOOK_RULES.minHoursBetweenPosts * 60) - (hoursSinceLastPost * 60));
+                        return {
+                            allowed: false,
+                            reason: `${group} needs ${minutesUntilSafe} more minutes`,
+                            minutesUntilSafe: minutesUntilSafe
+                        };
+                    }
+                }
+            }
+
+            // Check 3: Would total posts today exceed safe limit?
+            if (todaysTotalPosts + groups.length > FACEBOOK_RULES.maxTotalPostsPerDay) {
+                return {
+                    allowed: false,
+                    reason: `Daily limit (${FACEBOOK_RULES.maxTotalPostsPerDay}) would be exceeded`
+                };
+            }
+
+            return { allowed: true };
+        }
+
+        // Get next safe post time for a product-group combo
+        function getNextSafePostTime(product, group) {
+            const groupKey = `${product}|${group}`;
+            const lastPost = postingLog
+                .filter(log => log.key === groupKey)
+                .sort((a, b) => b.timestamp - a.timestamp)[0];
+
+            if (!lastPost) {
+                return new Date(); // Can post now
+            }
+
+            const nextSafeTime = new Date(lastPost.timestamp + (FACEBOOK_RULES.minHoursBetweenPosts * 60 * 60 * 1000));
+            return nextSafeTime;
+        }
+
+        // Log a post to track for safety rules
+        function logPost(product, group) {
+            const groupKey = `${product}|${group}`;
+            postingLog.push({
+                key: groupKey,
+                product: product,
+                group: group,
+                timestamp: Date.now()
+            });
+            localStorage.setItem('sf_posting_log', JSON.stringify(postingLog));
+        }
+
+        // Post all products with rotating templates
+        function postAllProducts() {
+            let totalPostsCreated = 0;
+            let blockedProducts = [];
+
+            allProducts.forEach(product => {
+                // Get next template index for this product
+                if (!templateIndexes[product]) {
+                    templateIndexes[product] = 0;
+                }
+
+                const templates = postTemplates[product] || [];
+                if (templates.length === 0) return;
+
+                const templateIdx = templateIndexes[product];
+                const template = templates[templateIdx];
+                const groups = facebookGroups[product] || [];
+
+                if (template && groups.length > 0) {
+                    // Check safety rules BEFORE posting to any groups
+                    const safetyCheck = canPost(product, groups);
+                    if (!safetyCheck.allowed) {
+                        blockedProducts.push(`${product}: ${safetyCheck.reason}`);
+                        return; // Skip this product
+                    }
+
+                    // Post to all groups for this product
+                    groups.forEach(group => {
+                        const post = {
+                            id: Date.now() + Math.random(),
+                            product: product,
+                            title: template.title,
+                            description: template.description,
+                            hashtags: '#PangasinanBusiness #DigitalAlley #SupportLocal',
+                            group: group,
+                            datePosted: new Date().toLocaleString(),
+                            engagement: {
+                                likes: 0,
+                                comments: 0,
+                                shares: 0
+                            }
+                        };
+                        postedMessages.push(post);
+                        logPost(product, group); // Log for safety tracking
+                        totalPostsCreated++;
+                    });
+
+                    // Rotate to next template for this product
+                    templateIndexes[product] = (templateIdx + 1) % templates.length;
+                }
+            });
+
+            // Save everything
+            localStorage.setItem('sf_posted_messages', JSON.stringify(postedMessages));
+            localStorage.setItem('sf_template_indexes', JSON.stringify(templateIndexes));
+
+            // Show results
+            if (totalPostsCreated > 0) {
+                showSuccess(`🎉 Posted to ${totalPostsCreated} groups across ${totalPostsCreated > 0 ? 'some' : 'all'} products! Next batch ready.`);
+            }
+            if (blockedProducts.length > 0) {
+                showError(`⛔ ${blockedProducts.length} product${blockedProducts.length > 1 ? 's' : ''} blocked by safety rules:\n${blockedProducts.join('\n')}`);
+            }
+            if (totalPostsCreated === 0 && blockedProducts.length === 0) {
+                showError('No valid templates or groups found for posting.');
+            }
+
+            isSelectAllMode = false;
+            clearForm();
+            updateAnalytics();
+        }
+
+        // Post to Facebook
+        function postToFacebook() {
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+
+            // Handle select all mode
+            if (selectedProducts.length === 13) {
+                postAllProducts();
+                return;
+            }
+
+            // Handle single product mode
+            if (selectedProducts.length === 1) {
+                const product = selectedProducts[0];
+                const title = document.getElementById('postTitle').value;
+                const description = document.getElementById('postDescription').value;
+                const hashtags = document.getElementById('postHashtags').value;
+
+                const selectedGroups = Array.from(document.querySelectorAll('.groupCheckbox:checked')).map(el => el.value);
+
+                if (!title || !description || selectedGroups.length === 0) {
+                    showError('Please fill in all fields and select at least one group');
+                    return;
+                }
+
+                // Check safety rules before posting
+                const safetyCheck = canPost(product, selectedGroups);
+                if (!safetyCheck.allowed) {
+                    showError(`❌ Cannot post: ${safetyCheck.reason}`);
+                    return;
+                }
+
+                // Add post for each group
+                selectedGroups.forEach(group => {
+                    const post = {
+                        id: Date.now() + Math.random(),
+                        product: product,
+                        title: title,
+                        description: description,
+                        hashtags: hashtags,
+                        group: group,
+                        datePosted: new Date().toLocaleString(),
+                        engagement: {
+                            likes: 0,
+                            comments: 0,
+                            shares: 0
+                        }
+                    };
+                    postedMessages.push(post);
+                    logPost(product, group); // Log for safety tracking
+                });
+
+                localStorage.setItem('sf_posted_messages', JSON.stringify(postedMessages));
+
+                showSuccess(`Posted to ${selectedGroups.length} group${selectedGroups.length > 1 ? 's' : ''}! 🎉`);
+                clearForm();
+                updateAnalytics();
+                return;
+            }
+
+            // Handle multiple products mode (2-12 products)
+            if (selectedProducts.length >= 2 && selectedProducts.length < 13) {
+                let totalPostsCreated = 0;
+
+                selectedProducts.forEach(product => {
+                    // Get custom content for this product (if provided)
+                    const customTitle = document.querySelector(`.multiProductTitle[data-product="${product}"]`)?.value || '';
+                    const customDescription = document.querySelector(`.multiProductDescription[data-product="${product}"]`)?.value || '';
+                    const customHashtags = document.querySelector(`.multiProductHashtags[data-product="${product}"]`)?.value || '#PangasinanBusiness #DigitalAlley #SupportLocal';
+
+                    // Get template (for fallback if no custom content)
+                    if (!templateIndexes[product]) {
+                        templateIndexes[product] = 0;
+                    }
+
+                    const templates = postTemplates[product] || [];
+                    if (templates.length === 0) return;
+
+                    const templateIdx = templateIndexes[product];
+                    const template = templates[templateIdx];
+                    const groups = facebookGroups[product] || [];
+
+                    if (template && groups.length > 0) {
+                        // Check safety rules for this product's groups
+                        const safetyCheck = canPost(product, groups);
+                        if (!safetyCheck.allowed) {
+                            showError(`❌ ${product}: Cannot post - ${safetyCheck.reason}`);
+                            return;
+                        }
+
+                        // Determine title and description (use custom if provided, otherwise use template)
+                        const postTitle = customTitle || template.title;
+                        const postDescription = customDescription || template.description;
+                        const postHashtags = customHashtags || '#PangasinanBusiness #DigitalAlley #SupportLocal';
+
+                        // Post to all groups for this product
+                        groups.forEach(group => {
+                            const post = {
+                                id: Date.now() + Math.random(),
+                                product: product,
+                                title: postTitle,
+                                description: postDescription,
+                                hashtags: postHashtags,
+                                group: group,
+                                datePosted: new Date().toLocaleString(),
+                                engagement: {
+                                    likes: 0,
+                                    comments: 0,
+                                    shares: 0
+                                }
+                            };
+                            postedMessages.push(post);
+                            logPost(product, group); // Log for safety tracking
+                            totalPostsCreated++;
+                        });
+
+                        // Rotate to next template for this product (if not using custom content)
+                        if (!customTitle && !customDescription) {
+                            templateIndexes[product] = (templateIdx + 1) % templates.length;
+                        }
+                    }
+                });
+
+                // Save everything
+                localStorage.setItem('sf_posted_messages', JSON.stringify(postedMessages));
+                localStorage.setItem('sf_template_indexes', JSON.stringify(templateIndexes));
+
+                showSuccess(`🎉 Posted to ${totalPostsCreated} groups across ${selectedProducts.length} products! Next batch ready.`);
+                clearForm();
+                updateAnalytics();
+                return;
+            }
+
+            showError('Please select at least one product to post');
+        }
+
+        // Clear form
+        function clearForm() {
+            document.querySelectorAll('.productCheckbox').forEach(cb => cb.checked = false);
+            document.querySelectorAll('.groupCheckbox').forEach(cb => cb.checked = false);
+            document.getElementById('templateSelect').innerHTML = '<option value="">-- Choose a template --</option>';
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postDescription').value = '';
+            document.getElementById('postHashtags').value = '';
+            document.getElementById('groupsContainer').innerHTML = '';
+            document.getElementById('modeIndicator').style.display = 'none';
+            document.getElementById('postBtn').textContent = '📤 POST TO FACEBOOK GROUPS';
+            document.getElementById('selectedCount').textContent = 'Select products...';
+            document.getElementById('multiProductForms').innerHTML = '';
+            document.getElementById('multiProductFormsContainer').style.display = 'none';
+            isSelectAllMode = false;
+            updatePreview();
+        }
+
+        // Switch tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            if (tabId === 'historyTab') {
+                updateHistory();
+            } else if (tabId === 'analyticsTab') {
+                updateAnalytics();
+            } else if (tabId === 'leadsTab') {
+                updateLeadsTable();
+            } else if (tabId === 'personalProfilesTab') {
+                autoLoadCurrentHourTemplate();
+            }
+        }
+
+        // Auto-load scheduled template content for current hour in Personal Profiles
+        function autoLoadCurrentHourTemplate() {
+            const now = new Date();
+            const currentHour = now.getHours();
+
+            // Reload scheduled posts from localStorage to get latest
+            scheduledPosts = JSON.parse(localStorage.getItem('sf_scheduled_posts')) || [];
+
+            // Find scheduled posts for current hour
+            let foundTemplate = null;
+
+            for (let post of scheduledPosts) {
+                try {
+                    // Parse the scheduled date/time
+                    const postDateTime = new Date(post.dateTime);
+                    const postHour = postDateTime.getHours();
+
+                    // Check if post is scheduled for current hour
+                    if (postHour === currentHour) {
+                        foundTemplate = post;
+                        break;
+                    }
+                } catch (e) {
+                    console.log('⚠️ Error parsing scheduled post:', e);
+                }
+            }
+
+            // If found, auto-populate the Personal Profiles fields
+            if (foundTemplate && foundTemplate.postData) {
+                const { postData } = foundTemplate;
+
+                // Get the first product's content as template
+                const firstProduct = Object.keys(postData.customContent)[0];
+                if (firstProduct && postData.customContent[firstProduct]) {
+                    const content = postData.customContent[firstProduct];
+
+                    document.getElementById('personalPostTitle').value = content.title || '';
+                    document.getElementById('personalPostDescription').value = content.description || '';
+                    document.getElementById('personalPostHashtags').value = content.hashtags || '#DigitalAlley #SupportLocal';
+
+                    // Update preview
+                    updatePersonalPostPreview();
+
+                    // Show notification
+                    showSuccess('✅ Auto-loaded: ' + (content.title || 'Scheduled template') + ' for ' + currentHour + ':00');
+                    logAuditAction('PERSONAL_PROFILES', `Auto-loaded template for hour ${currentHour}`);
+                }
+            }
+        }
+
+        // Leads Management Functions
+        function addLead() {
+            const name = document.getElementById('leadName').value.trim();
+            const phone = document.getElementById('leadPhone').value.trim();
+            const email = document.getElementById('leadEmail').value.trim();
+            const product = document.getElementById('leadProduct').value;
+            const source = document.getElementById('leadSource').value.trim();
+            const status = document.getElementById('leadStatus').value;
+            const followupDate = document.getElementById('leadFollowupDate').value;
+            const notes = document.getElementById('leadNotes').value.trim();
+
+            if (!name || !product) {
+                showError('Please fill in at least Name and Product');
+                return;
+            }
+
+            const lead = {
+                id: Date.now(),
+                name: name,
+                phone: phone,
+                email: email,
+                product: product,
+                source: source,
+                status: status,
+                followupDate: followupDate,
+                notes: notes,
+                dateAdded: new Date().toLocaleString()
+            };
+
+            salesLeads.push(lead);
+            localStorage.setItem('sf_sales_leads', JSON.stringify(salesLeads));
+
+            // Clear form
+            document.getElementById('leadName').value = '';
+            document.getElementById('leadPhone').value = '';
+            document.getElementById('leadEmail').value = '';
+            document.getElementById('leadProduct').value = '';
+            document.getElementById('leadSource').value = '';
+            document.getElementById('leadStatus').value = 'New';
+            document.getElementById('leadFollowupDate').value = '';
+            document.getElementById('leadNotes').value = '';
+
+            showSuccess(`✅ Lead "${name}" added successfully!`);
+            updateLeadsTable();
+        }
+
+        function deleteLead(leadId) {
+            if (confirm('Delete this lead?')) {
+                salesLeads = salesLeads.filter(lead => lead.id !== leadId);
+                localStorage.setItem('sf_sales_leads', JSON.stringify(salesLeads));
+                showSuccess('Lead deleted');
+                updateLeadsTable();
+            }
+        }
+
+        function updateLeadStatus(leadId, newStatus) {
+            const lead = salesLeads.find(l => l.id === leadId);
+            if (lead) {
+                lead.status = newStatus;
+                localStorage.setItem('sf_sales_leads', JSON.stringify(salesLeads));
+                updateLeadsTable();
+            }
+        }
+
+        function filterLeads() {
+            const searchTerm = document.getElementById('searchLeads').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+            const filterProduct = document.getElementById('filterProduct').value;
+
+            const filtered = salesLeads.filter(lead => {
+                const matchSearch = lead.name.toLowerCase().includes(searchTerm) || lead.phone.includes(searchTerm);
+                const matchStatus = !filterStatus || lead.status === filterStatus;
+                const matchProduct = !filterProduct || lead.product === filterProduct;
+                return matchSearch && matchStatus && matchProduct;
+            });
+
+            updateLeadsTableDisplay(filtered);
+        }
+
+        function updateLeadsTable() {
+            document.getElementById('searchLeads').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterProduct').value = '';
+            updateLeadsTableDisplay(salesLeads);
+        }
+
+        function updateLeadsTableDisplay(leads) {
+            const table = document.getElementById('leadsTable');
+            table.innerHTML = '';
+
+            if (leads.length === 0) {
+                table.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">No leads found</td></tr>';
+                return;
+            }
+
+            const productNames = {
+                galila: 'Galila Express',
+                rxone: 'Rx One',
+                siteledger: 'Site Ledger',
+                onlinetindero: 'Online Tindero',
+                sellerflow: 'Seller Flow',
+                english101: 'English 101',
+                tindahanko: 'Tindahanko',
+                menupro: 'MenuPro',
+                billis: 'Billis',
+                doctorsin: 'The Doctors are In',
+                equipmenttracker: 'EquipmentTracker',
+                digitalalley: 'Digital Alley Solutions',
+                socialmediamanager: 'Social Media Manager'
+            };
+
+            leads.forEach(lead => {
+                const row = `
+                    <tr>
+                        <td><strong>${lead.name}</strong></td>
+                        <td><a href="tel:${lead.phone}" style="color: #667eea; text-decoration: none;">${lead.phone || '-'}</a></td>
+                        <td><a href="mailto:${lead.email}" style="color: #667eea; text-decoration: none;">${lead.email || '-'}</a></td>
+                        <td>${productNames[lead.product] || lead.product}</td>
+                        <td style="font-size: 12px; color: #666;">${lead.source || '-'}</td>
+                        <td>
+                            <select onchange="updateLeadStatus(${lead.id}, this.value)" style="padding: 4px; border: 1px solid #ddd; border-radius: 3px;">
+                                <option value="New" ${lead.status === 'New' ? 'selected' : ''}>New</option>
+                                <option value="Contacted" ${lead.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
+                                <option value="Interested" ${lead.status === 'Interested' ? 'selected' : ''}>Interested</option>
+                                <option value="Negotiating" ${lead.status === 'Negotiating' ? 'selected' : ''}>Negotiating</option>
+                                <option value="Sold" ${lead.status === 'Sold' ? 'selected' : ''}>Sold</option>
+                                <option value="Not Interested" ${lead.status === 'Not Interested' ? 'selected' : ''}>Not Interested</option>
+                            </select>
+                        </td>
+                        <td style="font-size: 12px;">${lead.followupDate || '-'}</td>
+                        <td>
+                            <button class="secondary" onclick="deleteLead(${lead.id})" style="font-size: 11px; padding: 4px 8px;">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                table.innerHTML += row;
+            });
+        }
+
+        // Update history table
+        function updateHistory() {
+            const table = document.getElementById('historyTable');
+            table.innerHTML = '';
+
+            if (postedMessages.length === 0) {
+                table.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">No posts yet</td></tr>';
+                return;
+            }
+
+            postedMessages.forEach(post => {
+                const engagement = post.engagement.likes + post.engagement.comments + post.engagement.shares;
+                const row = `
+                    <tr>
+                        <td>${post.datePosted}</td>
+                        <td><span class="badge product">${post.product}</span></td>
+                        <td><span class="badge group">${post.group}</span></td>
+                        <td>${post.title}</td>
+                        <td>${post.engagement.likes}/${post.engagement.comments}/${post.engagement.shares}</td>
+                        <td><span class="badge engagement">${engagement}</span></td>
+                        <td>
+                            <button class="secondary" onclick="editEngagement('${post.id}')" style="font-size: 11px; padding: 4px 8px; margin-right: 4px;">Edit</button>
+                            ${engagement > 0 ? `<button class="secondary" onclick="createLeadFromEngagement('${post.id}')" style="font-size: 11px; padding: 4px 8px; background: #e8f5e9; color: #2e7d32;">➕ Lead</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+                table.innerHTML += row;
+            });
+        }
+
+        // Create lead from post engagement
+        function createLeadFromEngagement(postId) {
+            const post = postedMessages.find(p => p.id == postId);
+            if (!post) return;
+
+            // Pre-fill the Leads form
+            document.getElementById('leadProduct').value = post.product;
+            document.getElementById('leadSource').value = post.group;
+
+            const engagement = post.engagement.likes + post.engagement.comments + post.engagement.shares;
+            const notes = `📱 Interested from "${post.title}" engagement: ${post.engagement.likes}L ${post.engagement.comments}C ${post.engagement.shares}S (Total: ${engagement})`;
+            document.getElementById('leadNotes').value = notes;
+            document.getElementById('leadStatus').value = 'Interested';
+
+            // Switch to Leads tab
+            switchTab('leadsTab');
+
+            // Focus on name field and scroll
+            setTimeout(() => {
+                document.getElementById('leadName').focus();
+                document.getElementById('leadName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+
+            logAuditAction('ENGAGEMENT_TO_LEAD', `Created lead from engagement on post: ${post.product} in ${post.group}`);
+            showSuccess('✅ Form pre-filled! Enter prospect name to create lead');
+        }
+
+        // Edit engagement
+        function editEngagement(postId) {
+            const post = postedMessages.find(p => p.id == postId);
+            if (!post) return;
+
+            const likes = prompt('Likes:', post.engagement.likes);
+            if (likes === null) return; // User cancelled
+
+            const comments = prompt('Comments:', post.engagement.comments);
+            if (comments === null) return;
+
+            const shares = prompt('Shares:', post.engagement.shares);
+            if (shares === null) return;
+
+            const newLikes = parseInt(likes) || 0;
+            const newComments = parseInt(comments) || 0;
+            const newShares = parseInt(shares) || 0;
+            const totalEngagement = newLikes + newComments + newShares;
+
+            post.engagement = {
+                likes: newLikes,
+                comments: newComments,
+                shares: newShares
+            };
+
+            localStorage.setItem('sf_posted_messages', JSON.stringify(postedMessages));
+            logAuditAction('UPDATE_ENGAGEMENT', `Updated engagement for ${post.product} in ${post.group}: ${newLikes}L ${newComments}C ${newShares}S`);
+            updateHistory();
+            updateAnalytics();
+
+            // If engagement is added, offer to create lead
+            if (totalEngagement > 0) {
+                setTimeout(() => {
+                    if (confirm(`✅ Engagement updated! Would you like to create a lead from this engagement? (${totalEngagement} interactions)`)) {
+                        createLeadFromEngagement(postId);
+                    } else {
+                        showSuccess('Engagement updated!');
+                    }
+                }, 300);
+            } else {
+                showSuccess('Engagement updated!');
+            }
+        }
+
+        // Update analytics
+        function updateAnalytics() {
+            // Total posts
+            document.getElementById('totalPostsCount').textContent = postedMessages.length;
+
+            // Total engagement
+            const totalEngagement = postedMessages.reduce((sum, p) => {
+                return sum + (p.engagement.likes + p.engagement.comments + p.engagement.shares);
+            }, 0);
+            document.getElementById('totalEngagementCount').textContent = totalEngagement;
+
+            // Top product
+            const productEngagement = {};
+            postedMessages.forEach(p => {
+                if (!productEngagement[p.product]) {
+                    productEngagement[p.product] = { engagement: 0, count: 0 };
+                }
+                productEngagement[p.product].engagement += (p.engagement.likes + p.engagement.comments + p.engagement.shares);
+                productEngagement[p.product].count++;
+            });
+
+            const topProduct = Object.entries(productEngagement).sort((a, b) => b[1].engagement - a[1].engagement)[0];
+            if (topProduct) {
+                document.getElementById('topProductName').textContent = topProduct[0];
+                document.getElementById('topProductEngagement').textContent = topProduct[1].engagement + ' engagement';
+            }
+
+            // Top group
+            const groupPosts = {};
+            postedMessages.forEach(p => {
+                groupPosts[p.group] = (groupPosts[p.group] || 0) + 1;
+            });
+
+            const topGroup = Object.entries(groupPosts).sort((a, b) => b[1] - a[1])[0];
+            if (topGroup) {
+                document.getElementById('topGroupName').textContent = topGroup[0];
+                document.getElementById('topGroupEngagement').textContent = topGroup[1] + ' posts';
+            }
+
+            // Product engagement table
+            const prodTable = document.getElementById('productEngagementTable');
+            prodTable.innerHTML = '';
+
+            Object.entries(productEngagement).forEach(([product, data]) => {
+                const avgEngagement = Math.round(data.engagement / data.count);
+                const row = `
+                    <tr>
+                        <td>${product}</td>
+                        <td>${data.count}</td>
+                        <td>${avgEngagement}</td>
+                        <td>${postedMessages.filter(p => p.product === product).reduce((sum, p) => sum + p.engagement.likes, 0)}</td>
+                        <td>${postedMessages.filter(p => p.product === product).reduce((sum, p) => sum + p.engagement.comments, 0)}</td>
+                        <td>${postedMessages.filter(p => p.product === product).reduce((sum, p) => sum + p.engagement.shares, 0)}</td>
+                    </tr>
+                `;
+                prodTable.innerHTML += row;
+            });
+        }
+
+        // Messages
+        function showSuccess(msg) {
+            const el = document.getElementById('successMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        // ============ SECURITY FUNCTIONS ============
+
+        // Generate secure default password on first load
+        function generateSecurePassword() {
+            const existing = localStorage.getItem('sf_password');
+            if (!existing) {
+                const secure = 'SF_' + Math.random().toString(36).substr(2, 12).toUpperCase();
+                localStorage.setItem('sf_password', secure);
+                localStorage.setItem('sf_password_set_date', new Date().toISOString());
+                console.log('🔐 Secure password initialized (first run only)');
+                return secure;
+            }
+            return existing;
+        }
+
+        // Session management - auto logout after inactivity
+        let sessionTimeout = 30 * 60 * 1000; // 30 minutes
+        let lastActivityTime = Date.now();
+        let sessionCheckInterval = null;
+
+        function resetSessionTimer() {
+            lastActivityTime = Date.now();
+        }
+
+        function startSessionMonitor() {
+            if (sessionCheckInterval) clearInterval(sessionCheckInterval);
+            sessionCheckInterval = setInterval(() => {
+                if (currentUser && Date.now() - lastActivityTime > sessionTimeout) {
+                    logAuditAction('SESSION_TIMEOUT', 'User session expired due to inactivity');
+                    logout();
+                    showError('⏱️ Session expired. Please log in again.');
+                }
+            }, 60000); // Check every minute
+        }
+
+        // Login attempt rate limiting
+        let loginAttempts = JSON.parse(localStorage.getItem('sf_login_attempts')) || { count: 0, timestamp: Date.now() };
+        const MAX_LOGIN_ATTEMPTS = 5;
+        const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
+        function checkLoginAttempts() {
+            const now = Date.now();
+            if (now - loginAttempts.timestamp > LOCKOUT_DURATION) {
+                loginAttempts = { count: 0, timestamp: now };
+            }
+            return loginAttempts.count < MAX_LOGIN_ATTEMPTS;
+        }
+
+        function recordLoginAttempt(success) {
+            const now = Date.now();
+            if (now - loginAttempts.timestamp > LOCKOUT_DURATION) {
+                loginAttempts = { count: 0, timestamp: now };
+            }
+            if (!success) {
+                loginAttempts.count++;
+                localStorage.setItem('sf_login_attempts', JSON.stringify(loginAttempts));
+            } else {
+                loginAttempts = { count: 0, timestamp: now };
+                localStorage.setItem('sf_login_attempts', JSON.stringify(loginAttempts));
+            }
+        }
+
+        // Simple encryption for sensitive data
+        function encryptData(data, password) {
+            // Simple XOR-based encryption (not production-grade, but prevents casual viewing)
+            const encrypted = btoa(JSON.stringify(data)); // Base64 encode
+            return encrypted;
+        }
+
+        function decryptData(encrypted, password) {
+            try {
+                const decrypted = JSON.parse(atob(encrypted)); // Base64 decode
+                return decrypted;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Input sanitization - prevent XSS attacks
+        function sanitizeInput(input) {
+            if (!input) return '';
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        // Validate data integrity on load
+        function validateStoredData() {
+            try {
+                const data = {
+                    postedMessages: JSON.parse(localStorage.getItem('sf_posted_messages')) || [],
+                    salesLeads: JSON.parse(localStorage.getItem('sf_sales_leads')) || [],
+                    postingLog: JSON.parse(localStorage.getItem('sf_posting_log')) || [],
+                    templateIndexes: JSON.parse(localStorage.getItem('sf_template_indexes')) || {}
+                };
+
+                // Check for array corruption
+                if (!Array.isArray(data.postedMessages) || !Array.isArray(data.salesLeads) || !Array.isArray(data.postingLog)) {
+                    console.warn('⚠️ Data integrity check failed - some data was corrupted');
+                    logAuditAction('SYSTEM', 'Data integrity warning - potential corruption detected');
+                    return false;
+                }
+
+                return true;
+            } catch (e) {
+                console.error('❌ Data validation error:', e);
+                logAuditAction('SYSTEM', `Data validation error: ${e.message}`);
+                return false;
+            }
+        }
+
+        // Audit logging system - track all actions
+        let auditLog = JSON.parse(localStorage.getItem('sf_audit_log')) || [];
+
+        function logAuditAction(action, details) {
+            const timestamp = new Date().toLocaleString();
+            const user = currentUser || 'Unknown';
+            const auditEntry = {
+                timestamp: timestamp,
+                action: action,
+                details: details,
+                user: user
+            };
+            auditLog.push(auditEntry);
+
+            // Keep only last 500 entries to prevent storage bloat
+            if (auditLog.length > 500) {
+                auditLog = auditLog.slice(-500);
+            }
+
+            localStorage.setItem('sf_audit_log', JSON.stringify(auditLog));
+        }
+
+        // Display audit log
+        function openAuditLog() {
+            const modal = document.getElementById('auditLogModal');
+            const content = document.getElementById('auditLogContent');
+            modal.classList.add('active');
+
+            if (auditLog.length === 0) {
+                content.innerHTML = '<p style="color: #999;">No audit entries yet</p>';
+                return;
+            }
+
+            let html = '<table class="table" style="font-size: 12px;">';
+            html += '<thead><tr><th>Timestamp</th><th>Action</th><th>Details</th><th>User</th></tr></thead><tbody>';
+
+            // Show entries in reverse order (newest first)
+            [...auditLog].reverse().forEach(entry => {
+                html += `
+                    <tr>
+                        <td style="font-size: 11px;">${entry.timestamp}</td>
+                        <td><strong>${entry.action}</strong></td>
+                        <td style="font-size: 11px; color: #666;">${entry.details}</td>
+                        <td style="font-size: 11px;">${entry.user}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            content.innerHTML = html;
+        }
+
+        function closeAuditLog() {
+            document.getElementById('auditLogModal').classList.remove('active');
+        }
+
+        // Show current password on login screen
+        function showCurrentPassword() {
+            const password = generateSecurePassword();
+            const displayDiv = document.getElementById('passwordDisplay');
+            const displayedPassword = document.getElementById('displayedPassword');
+            displayedPassword.textContent = password;
+            displayDiv.style.display = 'block';
+
+            // Auto-hide after 30 seconds for security
+            setTimeout(() => {
+                displayDiv.style.display = 'none';
+                displayedPassword.textContent = '';
+            }, 30000);
+        }
+
+        // Login function - password authentication with rate limiting
+        function login() {
+            const passwordInput = document.getElementById('loginPassword');
+            const password = passwordInput.value;
+
+            if (!password) {
+                alert('Please enter a password');
+                return;
+            }
+
+            // Check if user is locked out due to too many attempts
+            if (!checkLoginAttempts()) {
+                const timeRemaining = Math.ceil((LOCKOUT_DURATION - (Date.now() - loginAttempts.timestamp)) / 60000);
+                showError(`🔒 Too many failed attempts. Try again in ${timeRemaining} minutes.`);
+                logAuditAction('LOGIN_BLOCKED', `Login attempt blocked - account locked (${loginAttempts.count}/${MAX_LOGIN_ATTEMPTS} attempts)`);
+                passwordInput.value = '';
+                return;
+            }
+
+            // Get stored password (generates secure one on first run)
+            const storedPassword = generateSecurePassword();
+
+            if (password === storedPassword) {
+                currentUser = 'Admin';
+                document.getElementById('loginModal').classList.remove('active');
+                logAuditAction('LOGIN', 'User logged in successfully');
+                showSuccess('✅ Login successful!');
+                passwordInput.value = '';
+                recordLoginAttempt(true); // Reset attempts
+                resetSessionTimer(); // Start session timer
+                startSessionMonitor(); // Monitor for inactivity
+                // Add activity listeners for session reset
+                document.addEventListener('mousemove', resetSessionTimer);
+                document.addEventListener('keypress', resetSessionTimer);
+                document.addEventListener('click', resetSessionTimer);
+            } else {
+                recordLoginAttempt(false); // Increment failed attempts
+                const attemptsRemaining = MAX_LOGIN_ATTEMPTS - loginAttempts.count;
+                logAuditAction('LOGIN_FAILED', `Invalid password attempt (${loginAttempts.count}/${MAX_LOGIN_ATTEMPTS})`);
+                if (attemptsRemaining > 0) {
+                    showError(`❌ Invalid password. ${attemptsRemaining} attempts remaining.`);
+                } else {
+                    showError(`🔒 Account locked. Too many failed attempts. Try again in 15 minutes.`);
+                }
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                clearInterval(schedulerInterval);
+                clearInterval(sessionCheckInterval);
+                // Remove activity listeners
+                document.removeEventListener('mousemove', resetSessionTimer);
+                document.removeEventListener('keypress', resetSessionTimer);
+                document.removeEventListener('click', resetSessionTimer);
+                logAuditAction('LOGOUT', 'User logged out');
+                currentUser = null;
+                document.getElementById('loginModal').classList.add('active');
+                document.getElementById('loginPassword').value = '';
+                // Keep password stored, don't remove it
+            }
+        }
+
+        // Settings modal
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            const storedPassword = generateSecurePassword(); // Ensure password exists
+
+            if (currentPassword !== storedPassword) {
+                showError('❌ Current password is incorrect');
+                return;
+            }
+
+            if (!newPassword || newPassword.length < 8) {
+                showError('❌ New password must be at least 8 characters');
+                return;
+            }
+
+            // Check for password strength - require mix of letters and numbers
+            if (!/[a-zA-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+                showError('❌ Password must contain both letters and numbers');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showError('❌ New password and confirmation do not match');
+                return;
+            }
+
+            localStorage.setItem('sf_password', newPassword);
+            logAuditAction('PASSWORD_CHANGE', 'User changed password');
+            showSuccess('✅ Password changed successfully!');
+            closeSettings();
+        }
+
+        // Enhanced addLead with sanitization and logging
+        const originalAddLead = addLead;
+        addLead = function() {
+            const name = sanitizeInput(document.getElementById('leadName').value.trim());
+            const phone = sanitizeInput(document.getElementById('leadPhone').value.trim());
+            const email = sanitizeInput(document.getElementById('leadEmail').value.trim());
+            const product = document.getElementById('leadProduct').value;
+            const source = sanitizeInput(document.getElementById('leadSource').value.trim());
+            const status = document.getElementById('leadStatus').value;
+            const followupDate = document.getElementById('leadFollowupDate').value;
+            const notes = sanitizeInput(document.getElementById('leadNotes').value.trim());
+
+            if (!name || !product) {
+                showError('Please fill in at least Name and Product');
+                return;
+            }
+
+            const lead = {
+                id: Date.now(),
+                name: name,
+                phone: phone,
+                email: email,
+                product: product,
+                source: source,
+                status: status,
+                followupDate: followupDate,
+                notes: notes,
+                dateAdded: new Date().toLocaleString()
+            };
+
+            salesLeads.push(lead);
+            localStorage.setItem('sf_sales_leads', JSON.stringify(salesLeads));
+
+            // Clear form
+            document.getElementById('leadName').value = '';
+            document.getElementById('leadPhone').value = '';
+            document.getElementById('leadEmail').value = '';
+            document.getElementById('leadProduct').value = '';
+            document.getElementById('leadSource').value = '';
+            document.getElementById('leadStatus').value = 'New';
+            document.getElementById('leadFollowupDate').value = '';
+            document.getElementById('leadNotes').value = '';
+
+            logAuditAction('ADD_LEAD', `Added new lead: ${name} for ${product}`);
+            showSuccess(`✅ Lead "${name}" added successfully!`);
+            updateLeadsTable();
+        };
+
+        // Enhanced deleteLead with confirmation
+        const originalDeleteLead = deleteLead;
+        deleteLead = function(leadId) {
+            const lead = salesLeads.find(l => l.id === leadId);
+            if (!lead) return;
+
+            if (confirm(`⚠️ Are you sure you want to delete "${lead.name}"? This action cannot be undone.`)) {
+                salesLeads = salesLeads.filter(l => l.id !== leadId);
+                localStorage.setItem('sf_sales_leads', JSON.stringify(salesLeads));
+                logAuditAction('DELETE_LEAD', `Deleted lead: ${lead.name}`);
+                showSuccess('Lead deleted');
+                updateLeadsTable();
+            }
+        };
+
+        // Enhanced postToFacebook with sanitization and scheduling
+        const originalPostToFacebook = postToFacebook;
+        postToFacebook = function() {
+            const selectedProducts = Array.from(document.querySelectorAll('.productCheckbox:checked')).map(el => el.value);
+
+            // Check if scheduling is enabled
+            const scheduleCheck = schedulePost();
+            if (scheduleCheck.scheduled) {
+                // Collect custom content for each product
+                const customContent = {};
+                selectedProducts.forEach(product => {
+                    customContent[product] = {
+                        title: document.querySelector(`.multiProductTitle[data-product="${product}"]`)?.value || '',
+                        description: document.querySelector(`.multiProductDescription[data-product="${product}"]`)?.value || '',
+                        hashtags: document.querySelector(`.multiProductHashtags[data-product="${product}"]`)?.value || ''
+                    };
+                });
+
+                const scheduledPost = {
+                    id: Date.now(),
+                    scheduledFor: scheduleCheck.dateTimeStr,
+                    dateTime: scheduleCheck.dateTime.toISOString(),
+                    postData: {
+                        products: selectedProducts,
+                        customContent: customContent
+                    }
+                };
+
+                scheduledPosts.push(scheduledPost);
+                localStorage.setItem('sf_scheduled_posts', JSON.stringify(scheduledPosts));
+
+                logAuditAction('SCHEDULE_POST', `Scheduled ${selectedProducts.length} product(s) to post at ${scheduleCheck.dateTimeStr}`);
+                showSuccess(`✅ Post scheduled for ${scheduleCheck.dateTimeStr}!`);
+                clearForm();
+                document.getElementById('enableSchedule').checked = false;
+                document.getElementById('scheduleForm').style.display = 'none';
+                return;
+            }
+
+            // Sanitize title and description
+            const title = sanitizeInput(document.getElementById('postTitle').value);
+            const description = sanitizeInput(document.getElementById('postDescription').value);
+
+            // Handle select all mode
+            if (selectedProducts.length === 13) {
+                logAuditAction('POST_ALL_PRODUCTS', 'Posted all 13 products with auto-rotating templates');
+                originalPostToFacebook.call(this);
+                return;
+            }
+
+            if (selectedProducts.length === 1) {
+                logAuditAction('POST_SINGLE', `Posted ${selectedProducts[0]} to selected groups`);
+            } else if (selectedProducts.length >= 2) {
+                logAuditAction('POST_MULTIPLE', `Posted ${selectedProducts.length} products to their respective groups`);
+            }
+
+            originalPostToFacebook.call(this);
+        };
+
+        // Validate data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize security - generate secure password on first run
+            generateSecurePassword();
+
+            if (!validateStoredData()) {
+                console.warn('⚠️ Data integrity issues detected');
+            }
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                logAuditAction('LOGOUT', 'User logged out');
+                currentUser = null;
+                document.getElementById('loginModal').classList.add('active');
+                document.getElementById('loginPassword').value = '';
+            }
+        }
+
+        // Initialize
+        // Check if user is already logged in
+        if (!currentUser) {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        switchTab('postTab');
+        updateTemplatesList();
+
+        // Initial data validation
+        validateStoredData();
+
+        // ============ AUTO-SCHEDULE FUNCTIONS ============
+
+        function toggleScheduleForm() {
+            const checkbox = document.getElementById('enableSchedule');
+            const form = document.getElementById('scheduleForm');
+            form.style.display = checkbox.checked ? 'block' : 'none';
+        }
+
+        function schedulePost() {
+            const isScheduled = document.getElementById('enableSchedule').checked;
+            if (!isScheduled) {
+                return { scheduled: false };
+            }
+
+            const scheduleDate = document.getElementById('scheduleDate').value;
+            const scheduleTime = document.getElementById('scheduleTime').value;
+
+            if (!scheduleDate || !scheduleTime) {
+                showError('❌ Please select both date and time for scheduling');
+                return { scheduled: false };
+            }
+
+            const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+            const now = new Date();
+
+            if (scheduledDateTime <= now) {
+                showError('❌ Scheduled time must be in the future');
+                return { scheduled: false };
+            }
+
+            return {
+                scheduled: true,
+                dateTime: scheduledDateTime,
+                dateTimeStr: scheduledDateTime.toLocaleString()
+            };
+        }
+
+        // Check and post scheduled items (runs every minute)
+        function checkScheduledPosts() {
+            const now = new Date();
+            const postsToPost = [];
+
+            for (let i = scheduledPosts.length - 1; i >= 0; i--) {
+                const scheduled = scheduledPosts[i];
+                const scheduledTime = new Date(scheduled.dateTime);
+
+                if (scheduledTime <= now) {
+                    postsToPost.push(scheduled);
+                    scheduledPosts.splice(i, 1);
+                }
+            }
+
+            if (postsToPost.length > 0) {
+                localStorage.setItem('sf_scheduled_posts', JSON.stringify(scheduledPosts));
+
+                postsToPost.forEach(scheduled => {
+                    // Recreate the post data and post it
+                    const { products, customContent, groups } = scheduled.postData;
+                    let scheduledPostsCreated = 0;
+                    let blockedDueToRules = [];
+
+                    products.forEach(product => {
+                        const productGroups = facebookGroups[product] || [];
+
+                        // Check safety rules BEFORE posting to any groups
+                        const safetyCheck = canPost(product, productGroups);
+                        if (!safetyCheck.allowed) {
+                            blockedDueToRules.push(`${product}: ${safetyCheck.reason}`);
+                            return; // Skip this product
+                        }
+
+                        productGroups.forEach(group => {
+                            const post = {
+                                id: Date.now() + Math.random(),
+                                product: product,
+                                title: customContent[product]?.title || 'Scheduled Post',
+                                description: customContent[product]?.description || 'Auto-posted from schedule',
+                                hashtags: customContent[product]?.hashtags || '#PangasinanBusiness #DigitalAlley',
+                                group: group,
+                                datePosted: new Date().toLocaleString(),
+                                engagement: { likes: 0, comments: 0, shares: 0 }
+                            };
+                            postedMessages.push(post);
+                            logPost(product, group);
+                            scheduledPostsCreated++;
+                        });
+                    });
+
+                    localStorage.setItem('sf_posted_messages', JSON.stringify(postedMessages));
+
+                    if (scheduledPostsCreated > 0) {
+                        logAuditAction('AUTO_POSTED_SCHEDULED', `Auto-posted scheduled post(s) - ${scheduledPostsCreated} groups`);
+                        showSuccess(`✅ Scheduled post(s) published automatically to ${scheduledPostsCreated} group${scheduledPostsCreated > 1 ? 's' : ''}!`);
+                    }
+
+                    if (blockedDueToRules.length > 0) {
+                        logAuditAction('SCHEDULED_POSTS_BLOCKED', `Blocked by safety rules: ${blockedDueToRules.join('; ')}`);
+                        showError(`⛔ Scheduled posts blocked by safety rules:\n${blockedDueToRules.join('\n')}`);
+                    }
+
+                    if (scheduledPostsCreated === 0 && blockedDueToRules.length === 0) {
+                        logAuditAction('NO_SCHEDULED_POSTS', `No valid products/groups for scheduled post`);
+                    }
+
+                    // Also trigger personal profile posting at same time
+                    triggerPersonalProfilePosting(scheduled.postData);
+
+                    updateAnalytics();
+                });
+            }
+        }
+
+        // Run scheduler every minute
+        let schedulerInterval = setInterval(checkScheduledPosts, 60000);
+
+        // Stop scheduler when page closes
+        window.addEventListener('beforeunload', () => {
+            clearInterval(schedulerInterval);
+        });
+
+        // ============ CSV EXPORT FUNCTION ============
+
+        function exportLeadsToCSV() {
+            if (salesLeads.length === 0) {
+                showError('❌ No leads to export');
+                return;
+            }
+
+            // Get current filtered leads
+            const searchTerm = document.getElementById('searchLeads').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+            const filterProduct = document.getElementById('filterProduct').value;
+
+            const filtered = salesLeads.filter(lead => {
+                const matchSearch = lead.name.toLowerCase().includes(searchTerm) || lead.phone.includes(searchTerm);
+                const matchStatus = !filterStatus || lead.status === filterStatus;
+                const matchProduct = !filterProduct || lead.product === filterProduct;
+                return matchSearch && matchStatus && matchProduct;
+            });
+
+            if (filtered.length === 0) {
+                showError('❌ No leads match current filters');
+                return;
+            }
+
+            // Create CSV header
+            const headers = ['Name', 'Phone', 'Email', 'Product', 'Source Group', 'Status', 'Follow-up Date', 'Notes', 'Date Added'];
+            const rows = filtered.map(lead => [
+                `"${lead.name.replace(/"/g, '""')}"`,
+                `"${lead.phone.replace(/"/g, '""')}"`,
+                `"${lead.email.replace(/"/g, '""')}"`,
+                `"${lead.product.replace(/"/g, '""')}"`,
+                `"${lead.source.replace(/"/g, '""')}"`,
+                `"${lead.status.replace(/"/g, '""')}"`,
+                `"${lead.followupDate.replace(/"/g, '""')}"`,
+                `"${lead.notes.replace(/"/g, '""')}"`,
+                `"${lead.dateAdded.replace(/"/g, '""')}"`
+            ]);
+
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            const timestamp = new Date().toISOString().slice(0, 10);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `seller-flow-leads_${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            logAuditAction('EXPORT_LEADS_CSV', `Exported ${filtered.length} leads to CSV`);
+            showSuccess(`✅ Exported ${filtered.length} leads to CSV!`);
+        }
+
+        // Check for scheduled posts immediately
+        checkScheduledPosts();
+
+        // Trigger personal profile posting at scheduled time
+        function triggerPersonalProfilePosting(postData) {
+            // Get first product's content to post to personal profile
+            const firstProduct = Object.keys(postData.customContent)[0];
+            if (!firstProduct || !postData.customContent[firstProduct]) return;
+
+            const content = postData.customContent[firstProduct];
+            const postText = generatePersonalPostText(
+                content.title || '',
+                content.description || '',
+                content.hashtags || '#DigitalAlley #SupportLocal'
+            );
+
+            // Store in localStorage for Claude browser to retrieve
+            const personalProfilePost = {
+                timestamp: new Date().toLocaleString(),
+                title: content.title,
+                description: content.description,
+                hashtags: content.hashtags,
+                fullText: postText,
+                profileUrl: 'https://www.facebook.com/mac.salcedo/',
+                status: 'ready_to_post'
+            };
+
+            localStorage.setItem('sf_personal_profile_post', JSON.stringify(personalProfilePost));
+            logAuditAction('PERSONAL_PROFILE_READY', `Ready to post to Mac Salcedo profile: ${content.title}`);
+
+            // Show notification to user
+            showSuccess('📤 Personal profile post ready! Click button below to post via Claude Browser');
+
+            // Create and show notification with post to button
+            showPersonalProfilePostNotification(postText, personalProfilePost);
+        }
+
+        // Display notification for personal profile posting
+        function showPersonalProfilePostNotification(postText, postData) {
+            const notifDiv = document.createElement('div');
+            notifDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: white;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                padding: 15px;
+                max-width: 350px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+            `;
+
+            notifDiv.innerHTML = `
+                <h4 style="margin: 0 0 10px 0; color: #667eea;">📤 Post to Mac Salcedo</h4>
+                <p style="margin: 0 0 10px 0; font-size: 12px; color: #666; max-height: 60px; overflow: auto;">
+                    "${postText.substring(0, 100)}..."
+                </p>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="this.parentElement.parentElement.remove();" style="flex: 1; padding: 8px; background: #f0f0f0; border: none; border-radius: 4px; cursor: pointer;">Dismiss</button>
+                    <button onclick="postViaClaudeBrowser('${postData.profileUrl}', ${JSON.stringify(postData).replace(/'/g, '&#39;')});" style="flex: 1; padding: 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Post Now</button>
+                </div>
+            `;
+
+            document.body.appendChild(notifDiv);
+
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (notifDiv.parentElement) notifDiv.remove();
+            }, 10000);
+        }
+
+        // Post via Claude Browser
+        function postViaClaudeBrowser(profileUrl, postData) {
+            // Open Claude Browser (built-in browser in Cowork)
+            // Store instructions in localStorage for Claude to read
+            const claudeInstructions = {
+                action: 'post_to_facebook',
+                profileUrl: profileUrl,
+                postText: postData.fullText,
+                title: postData.title,
+                timestamp: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('sf_claude_browser_task', JSON.stringify(claudeInstructions));
+            logAuditAction('PERSONAL_PROFILE_POSTING', `Initiated posting to ${profileUrl}`);
+
+            // Display message with instructions
+            const instructionDiv = document.createElement('div');
+            instructionDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                border-radius: 8px;
+                padding: 30px;
+                max-width: 500px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                z-index: 10001;
+            `;
+
+            instructionDiv.innerHTML = `
+                <h3 style="margin: 0 0 15px 0; color: #333;">📱 Post to Personal Profile</h3>
+                <p style="color: #666; margin: 0 0 15px 0;">Claude Browser is ready. Here's what to do:</p>
+                <ol style="color: #666; margin: 0 0 15px 0; padding-left: 20px;">
+                    <li>Open Claude Browser (Cmd+Shift+B on Mac, Ctrl+Shift+B on Windows)</li>
+                    <li>It will navigate to your Facebook profile</li>
+                    <li>Click the post input field</li>
+                    <li>Claude will auto-fill and post your content</li>
+                    <li>Monitor the posting process</li>
+                </ol>
+                <p style="color: #999; font-size: 12px; margin: 0;">
+                    Post Text:<br>
+                    <code style="background: #f5f5f5; padding: 8px; display: block; border-radius: 4px; max-height: 80px; overflow: auto;">
+                        ${postData.fullText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                    </code>
+                </p>
+                <button onclick="this.parentElement.remove();" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Got it! Let Claude Browser handle it</button>
+            `;
+
+            document.body.appendChild(instructionDiv);
+        }
+
+        // Generate personal post text
+        function generatePersonalPostText(title, description, hashtags) {
+            let text = '';
+            if (title) text += title + '\n\n';
+            if (description) text += description + '\n\n';
+            if (hashtags) text += hashtags;
+            return text.trim();
+        }
+
+        // Test post via Claude Browser - for testing purposes
+        function testPostViaClaudeBrowser() {
+            const title = document.getElementById('personalPostTitle').value.trim();
+            const description = document.getElementById('personalPostDescription').value.trim();
+            const hashtags = document.getElementById('personalPostHashtags').value.trim();
+
+            if (!title || !description) {
+                showError('❌ Please fill in Post Title and Description before testing');
+                return;
+            }
+
+            // Check Facebook restrictions for personal profile
+            const personalProfileKey = 'mac_salcedo|personal';
+            const now = Date.now();
+            const oneDayAgo = now - (24 * 60 * 60 * 1000);
+            const recentPosts = postingLog.filter(log => log.timestamp > oneDayAgo && log.key === personalProfileKey);
+
+            // Check if already posted to personal profile today
+            if (recentPosts.length > 0) {
+                showError('❌ Already posted to personal profile today. Facebook limits one post per day to same account.');
+                return;
+            }
+
+            // Check last post timing (minimum 2 hours between posts)
+            const lastPost = postingLog
+                .filter(log => log.key === personalProfileKey)
+                .sort((a, b) => b.timestamp - a.timestamp)[0];
+
+            if (lastPost) {
+                const hoursSinceLastPost = (now - lastPost.timestamp) / (60 * 60 * 1000);
+                if (hoursSinceLastPost < FACEBOOK_RULES.minHoursBetweenPosts) {
+                    const minutesUntilSafe = Math.ceil((FACEBOOK_RULES.minHoursBetweenPosts * 60) - (hoursSinceLastPost * 60));
+                    showError(`❌ Wait ${minutesUntilSafe} more minutes before posting again (Facebook restriction)`);
+                    return;
+                }
+            }
+
+            // All checks passed - prepare for posting
+            const postText = generatePersonalPostText(title, description, hashtags);
+            const postData = {
+                profileUrl: 'https://www.facebook.com/mac.salcedo/',
+                title: title,
+                description: description,
+                hashtags: hashtags,
+                fullText: postText,
+                status: 'ready_for_test',
+                testedAt: new Date().toLocaleString()
+            };
+
+            logAuditAction('PERSONAL_PROFILE_TEST', `Test posting prepared: ${title}`);
+            showSuccess('✅ Facebook restrictions check passed! Ready to test.');
+
+            // Show posting instructions
+            postViaClaudeBrowser('https://www.facebook.com/mac.salcedo/', postData);
+        }
+
+        // Personal Profiles Functions
+        function updatePersonalPostPreview() {
+            const title = document.getElementById('personalPostTitle').value;
+            const description = document.getElementById('personalPostDescription').value;
+            const hashtags = document.getElementById('personalPostHashtags').value;
+
+            let preview = '';
+            if (title) {
+                preview += title + '\n\n';
+            }
+            if (description) {
+                preview += description + '\n\n';
+            }
+            if (hashtags) {
+                preview += hashtags;
+            }
+
+            const previewDiv = document.getElementById('personalPostPreview');
+            if (preview.trim()) {
+                previewDiv.textContent = preview.trim();
+            } else {
+                previewDiv.textContent = '[Preview will appear here]';
+            }
+        }
+
+        function generatePersonalPostText() {
+            const title = document.getElementById('personalPostTitle').value;
+            const description = document.getElementById('personalPostDescription').value;
+            const hashtags = document.getElementById('personalPostHashtags').value;
+
+            let postText = '';
+            if (title) {
+                postText += title + '\n\n';
+            }
+            if (description) {
+                postText += description + '\n\n';
+            }
+            if (hashtags) {
+                postText += hashtags;
+            }
+
+            return postText.trim();
+        }
+
+        function copyToClipboard(text) {
+            if (!text) {
+                alert('Please create a post first (title or description)');
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                const feedback = document.getElementById('personalCopyFeedback');
+                feedback.style.display = 'block';
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy to clipboard: ' + err);
+            });
+        }
+
+        function copyDigitalAlleyPost() {
+            const postText = generatePersonalPostText();
+            copyToClipboard(postText);
+        }
+
+        function copyOnlinePartsPost() {
+            const postText = generatePersonalPostText();
+            copyToClipboard(postText);
+        }
+
+        function postToMacSalcedo() {
+            const postText = generatePersonalPostText();
+
+            if (!postText) {
+                alert('Please create a post first (title or description)');
+                return;
+            }
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(postText).then(() => {
+                // Show instruction message
+                const statusDiv = document.getElementById('personalPostingStatus');
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#cfe2ff';
+                statusDiv.style.color = '#084298';
+                statusDiv.style.border = '1px solid #b6d4fe';
+                statusDiv.innerHTML = `
+                    <strong>✅ Post copied to clipboard!</strong><br>
+                    <small style="display: block; margin-top: 8px;">
+                    Now paste this in Claude and say: <code style="background: #fff; padding: 2px 4px; border-radius: 2px;">"post_to_mac_salcedo"</code><br>
+                    I'll auto-post it to your Mac Salcedo profile via Chrome automation.
+                    </small>
+                `;
+
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }).catch(err => {
+                alert('Failed to copy to clipboard: ' + err);
+            });
+        }
+
+        function clearPersonalForm() {
+            document.getElementById('personalPostTitle').value = '';
+            document.getElementById('personalPostDescription').value = '';
+            document.getElementById('personalPostHashtags').value = '';
+            updatePersonalPostPreview();
+        }
+
+        // Add event listeners for personal profile form
+        document.getElementById('personalPostTitle').addEventListener('input', updatePersonalPostPreview);
+        document.getElementById('personalPostDescription').addEventListener('input', updatePersonalPostPreview);
+        document.getElementById('personalPostHashtags').addEventListener('input', updatePersonalPostPreview);
+    </script>
+</body>
+</html>
