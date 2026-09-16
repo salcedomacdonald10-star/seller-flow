@@ -830,7 +830,7 @@
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                        <button onclick="testPostViaClaudeBrowser();" style="background: #28a745; grid-column: 1 / -1;">🧪 Test Post via Claude Browser</button>
+                        <button onclick="queueForAutomaticPosting('https://www.facebook.com/mac.salcedo/', {fullText: generatePersonalPostText(document.getElementById('personalPostTitle').value, document.getElementById('personalPostDescription').value, document.getElementById('personalPostHashtags').value)});" style="background: #28a745; grid-column: 1 / -1;">📤 Queue for Automatic Posting</button>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
@@ -3106,56 +3106,54 @@
             }, 10000);
         }
 
-        // Post via Claude Browser
-        function postViaClaudeBrowser(profileUrl, postData) {
-            // Open Claude Browser (built-in browser in Cowork)
-            // Store instructions in localStorage for Claude to read
-            const claudeInstructions = {
-                action: 'post_to_facebook',
-                profileUrl: profileUrl,
-                postText: postData.fullText,
-                title: postData.title,
-                timestamp: new Date().toLocaleString()
+        // Queue post for automatic posting via Claude Workflow
+        function queueForAutomaticPosting(profileUrl, postData) {
+            const title = document.getElementById('personalPostTitle').value.trim();
+            const description = document.getElementById('personalPostDescription').value.trim();
+            const hashtags = document.getElementById('personalPostHashtags').value.trim();
+
+            if (!title || !description) {
+                showError('❌ Please fill in Post Title and Description before queuing');
+                return;
+            }
+
+            // Create post queue entry with unique ID
+            const postId = 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const queueEntry = {
+                id: postId,
+                title: title,
+                description: description,
+                hashtags: hashtags,
+                fullText: postData.fullText,
+                profileUrls: [
+                    'https://www.facebook.com/mac.salcedo/',
+                    'https://www.facebook.com/profile.php?id=61594215426342'
+                ],
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                queuedAt: new Date().toLocaleString()
             };
 
-            localStorage.setItem('sf_claude_browser_task', JSON.stringify(claudeInstructions));
-            logAuditAction('PERSONAL_PROFILE_POSTING', `Initiated posting to ${profileUrl}`);
+            // Generate JSON file content
+            const jsonContent = JSON.stringify(queueEntry, null, 2);
+            const filename = `seller-flow-post-${postId}.json`;
 
-            // Display message with instructions
-            const instructionDiv = document.createElement('div');
-            instructionDiv.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: white;
-                border-radius: 8px;
-                padding: 30px;
-                max-width: 500px;
-                box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-                z-index: 10001;
-            `;
+            // Create and trigger download
+            const blob = new Blob([jsonContent], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
 
-            instructionDiv.innerHTML = `
-                <h3 style="margin: 0 0 15px 0; color: #333;">📱 Post to Personal Profile</h3>
-                <p style="color: #666; margin: 0 0 15px 0;">Claude Browser is ready. Here's what to do:</p>
-                <ol style="color: #666; margin: 0 0 15px 0; padding-left: 20px;">
-                    <li>Open Claude Browser (Cmd+Shift+B on Mac, Ctrl+Shift+B on Windows)</li>
-                    <li>It will navigate to your Facebook profile</li>
-                    <li>Click the post input field</li>
-                    <li>Claude will auto-fill and post your content</li>
-                    <li>Monitor the posting process</li>
-                </ol>
-                <p style="color: #999; font-size: 12px; margin: 0;">
-                    Post Text:<br>
-                    <code style="background: #f5f5f5; padding: 8px; display: block; border-radius: 4px; max-height: 80px; overflow: auto;">
-                        ${postData.fullText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
-                    </code>
-                </p>
-                <button onclick="this.parentElement.remove();" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Got it! Let Claude Browser handle it</button>
-            `;
+            // Log action
+            logAuditAction('POST_QUEUED_FOR_WORKFLOW', `Post queued: ${title} (ID: ${postId})`);
 
-            document.body.appendChild(instructionDiv);
+            // Show success message with instructions
+            showSuccess(`✅ Post queued for automatic posting!\n\nFile: ${filename}\n\nNext step: Drag this file to your Google Drive "SellerFlow-PendingPosts" folder. Claude Workflow will post it within the next 2 hours.`);
         }
 
         // Generate personal post text
@@ -3167,70 +3165,7 @@
             return text.trim();
         }
 
-        // Test post via Claude Browser - for testing purposes
-        function testPostViaClaudeBrowser() {
-            const title = document.getElementById('personalPostTitle').value.trim();
-            const description = document.getElementById('personalPostDescription').value.trim();
-            const hashtags = document.getElementById('personalPostHashtags').value.trim();
-
-            if (!title || !description) {
-                showError('❌ Please fill in Post Title and Description before testing');
-                return;
-            }
-
-            // Validate hashtags if provided
-            if (hashtags) {
-                const hashtagValidation = validateHashtags(hashtags);
-                if (!hashtagValidation.valid) {
-                    showError('❌ Hashtag Validation Error:\n' + hashtagValidation.errors.join('\n'));
-                    return;
-                }
-            }
-
-            // Check Facebook restrictions for personal profile
-            const personalProfileKey = 'mac_salcedo|personal';
-            const now = Date.now();
-            const oneDayAgo = now - (24 * 60 * 60 * 1000);
-            const recentPosts = postingLog.filter(log => log.timestamp > oneDayAgo && log.key === personalProfileKey);
-
-            // Check if already posted to personal profile today
-            if (recentPosts.length > 0) {
-                showError('❌ Already posted to personal profile today. Facebook limits one post per day to same account.');
-                return;
-            }
-
-            // Check last post timing (minimum 2 hours between posts)
-            const lastPost = postingLog
-                .filter(log => log.key === personalProfileKey)
-                .sort((a, b) => b.timestamp - a.timestamp)[0];
-
-            if (lastPost) {
-                const hoursSinceLastPost = (now - lastPost.timestamp) / (60 * 60 * 1000);
-                if (hoursSinceLastPost < FACEBOOK_RULES.minHoursBetweenPosts) {
-                    const minutesUntilSafe = Math.ceil((FACEBOOK_RULES.minHoursBetweenPosts * 60) - (hoursSinceLastPost * 60));
-                    showError(`❌ Wait ${minutesUntilSafe} more minutes before posting again (Facebook restriction)`);
-                    return;
-                }
-            }
-
-            // All checks passed - prepare for posting
-            const postText = generatePersonalPostText(title, description, hashtags);
-            const postData = {
-                profileUrl: 'https://www.facebook.com/mac.salcedo/',
-                title: title,
-                description: description,
-                hashtags: hashtags,
-                fullText: postText,
-                status: 'ready_for_test',
-                testedAt: new Date().toLocaleString()
-            };
-
-            logAuditAction('PERSONAL_PROFILE_TEST', `Test posting prepared: ${title}`);
-            showSuccess('✅ Facebook restrictions check passed! Ready to test.');
-
-            // Show posting instructions
-            postViaClaudeBrowser('https://www.facebook.com/mac.salcedo/', postData);
-        }
+        // Removed old testPostViaClaudeBrowser function - replaced with queueForAutomaticPosting
 
         // Personal Profiles Functions
         function updatePersonalPostPreview() {
