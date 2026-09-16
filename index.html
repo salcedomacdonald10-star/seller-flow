@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Flow - Social Media Manager</title>
+    <title>Seller Flow v8 - BLAST POST Social Media Manager</title>
     <style>
         * {
             margin: 0;
@@ -613,11 +613,40 @@
         </div>
     </div>
 
+    <!-- BLAST POST PREVIEW MODAL -->
+    <div id="blastPostPreviewModal" class="login-modal">
+        <div class="login-box" style="max-width: 600px;">
+            <button class="close-btn" onclick="closeBlastPreview()" style="position: absolute; top: 10px; right: 10px; float: none;">×</button>
+            <h2>👁️ Preview Your BLAST POST</h2>
+            <div style="margin-top: 20px; max-height: 60vh; overflow-y: auto;">
+                <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #333;">Post Preview:</h4>
+                    <div id="blastPreviewContent" style="background: white; padding: 20px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 15px;">
+                        [Preview will appear here]
+                    </div>
+                </div>
+
+                <div style="background: #fff3cd; padding: 15px; border-radius: 4px; border-left: 4px solid #ffc107; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 10px 0; color: #856404;">📍 BLAST REACH:</h4>
+                    <p style="margin: 5px 0; color: #856404; font-size: 14px;">✓ Your Personal Profile</p>
+                    <p style="margin: 5px 0; color: #856404; font-size: 14px;">✓ All 65 Pangasinan Facebook Groups</p>
+                    <p style="margin: 5px 0; color: #856404; font-size: 14px; font-weight: 600;">Total reach: 66 locations</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button onclick="confirmBlastPostPreview();" style="background: #28a745; color: white; padding: 12px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600;">✓ CONFIRM & BLAST</button>
+                    <button onclick="closeBlastPreview();" style="background: #6c757d; color: white; padding: 12px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600;">✕ Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="navbar">
         <h1>📱 Seller Flow - Social Media Manager</h1>
         <div class="nav-links">
             <button onclick="switchTab('postTab')">Create Post</button>
             <button onclick="switchTab('personalProfilesTab')">👤 Personal Profiles</button>
+            <button onclick="switchTab('clientAdsTab')">📺 Client Ads</button>
             <button onclick="switchTab('historyTab')">Posted History</button>
             <button onclick="switchTab('analyticsTab')">Analytics</button>
             <button onclick="switchTab('leadsTab')">👥 Leads</button>
@@ -798,25 +827,141 @@
 
         <!-- PERSONAL PROFILES TAB -->
         <div id="personalProfilesTab" class="tab-content hidden">
+            <!-- BLAST POST NOW SECTION -->
+            <div class="form-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 2px solid #764ba2;">
+                <h3 style="color: white; margin-bottom: 10px;">🚀 BLAST POST NOW</h3>
+                <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">Post simultaneously to your personal profile + ALL 65 Pangasinan business groups across all sectors</p>
+
+                <div class="form-group">
+                    <label style="color: white;">Auto-Select Next Image & Template</label>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 4px; margin-top: 10px;">
+                        <p style="color: rgba(255,255,255,0.9); margin-bottom: 10px;">✓ System auto-rotates images from your uploaded products</p>
+                        <p style="color: rgba(255,255,255,0.9); margin-bottom: 10px;">✓ Auto-populates template based on product</p>
+                        <p style="color: rgba(255,255,255,0.9);">✓ Posts to personal profile + all 65 GCs instantly</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                    <button onclick="blastPostNow();" style="background: white; color: #667eea; font-weight: 700; font-size: 16px; padding: 15px;">📤 BLAST POST NOW</button>
+                    <button onclick="showBlastScheduleForm();" style="background: rgba(255,255,255,0.2); border: 2px solid white; color: white; font-weight: 700; font-size: 16px; padding: 15px;">⏰ BLAST SCHEDULE</button>
+                </div>
+
+                <div id="blastScheduleForm" style="display: none; margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 4px;">
+                    <div class="form-group">
+                        <label style="color: white;">Schedule Date</label>
+                        <input type="date" id="blastScheduleDate" style="padding: 10px; border: none; border-radius: 4px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="color: white;">Schedule Time (HH:MM)</label>
+                        <input type="time" id="blastScheduleTime" style="padding: 10px; border: none; border-radius: 4px;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="confirmBlastSchedule();" style="background: white; color: #667eea; font-weight: 700;">✓ Confirm Schedule</button>
+                        <button onclick="hideBlastScheduleForm();" style="background: rgba(255,255,255,0.2); border: 2px solid white; color: white;">✕ Cancel</button>
+                    </div>
+                </div>
+
+                <div id="blastPreview" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 4px; display: none;">
+                    <p style="color: white; font-weight: 600; margin-bottom: 10px;">📍 Will reach:</p>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 14px;">✓ Your personal profile</p>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 14px;">✓ 65 Pangasinan Facebook Groups</p>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin-top: 10px;"><strong>Sectors:</strong> Delivery, Pharmacy, Construction, Retail, Restaurants, Finance, Healthcare, Education, E-commerce, Dev Services, Social Media</p>
+                </div>
+
+                <div id="blastStatus" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none; text-align: center; font-weight: 600; color: white;"></div>
+            </div>
+
+            <!-- PRODUCT MANAGEMENT SECTION -->
             <div class="form-section">
-                <h3>👤 Post to Personal & Business Profiles</h3>
-                <p style="color: #666; margin-bottom: 20px;">Create a post and copy it to your personal profile or business pages.</p>
+                <h3>📦 Digital Alley Products - Image Management</h3>
+                <p style="color: #666; margin-bottom: 20px;">Manage your products and upload images (5-10 per product). These images will cycle through your GC posts.</p>
+            </div>
+
+            <div class="form-section">
+                <h4 style="margin-bottom: 15px;">➕ Add/Update Product Images</h4>
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="productName" placeholder="e.g., iPhone 12, Laptop, etc.">
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Product Images (up to 10) *</label>
+                    <input type="file" id="productImages" multiple accept="image/*" style="padding: 10px; border: 1px solid #ddd;">
+                    <small style="color: #666; display: block; margin-top: 5px;">Select 5-10 images. Supported: JPG, PNG, GIF</small>
+                </div>
+
+                <button onclick="saveProductWithImages();" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%;">💾 Save Product & Images</button>
+                <div id="productSaveStatus" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none; text-align: center; font-weight: 600;"></div>
+            </div>
+
+            <!-- PRODUCTS GALLERY -->
+            <div class="form-section">
+                <h4 style="margin-bottom: 15px;">📷 Your Products & Image Gallery</h4>
+                <div id="productsGallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="text-align: center; color: #999; padding: 40px; grid-column: 1 / -1;">No products yet. Add one above.</div>
+                </div>
+            </div>
+
+            <!-- POST CREATION WITH IMAGES -->
+            <div class="form-section" style="margin-top: 30px;">
+                <h3 style="margin-bottom: 10px;">✍️ Create Post with Images</h3>
+                <p style="color: #666; margin-bottom: 20px;">Create posts with text + images, or image-only posts. Images auto-cycle from your product database.</p>
             </div>
 
             <div class="form-section">
                 <div class="form-group">
-                    <label>Post Title</label>
-                    <input type="text" id="personalPostTitle" placeholder="Enter post title">
+                    <label>Post Type *</label>
+                    <select id="postType" onchange="updatePostTypeFields();">
+                        <option value="text">Text Only</option>
+                        <option value="text-image">Text + Images</option>
+                        <option value="image-only">Image Only (1 per post)</option>
+                    </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Post Description</label>
-                    <textarea id="personalPostDescription" placeholder="Enter post content"></textarea>
+                <div id="textFieldsContainer">
+                    <div class="form-group">
+                        <label>Post Title</label>
+                        <input type="text" id="personalPostTitle" placeholder="Enter post title">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Post Description</label>
+                        <textarea id="personalPostDescription" placeholder="Enter post content"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hashtags (optional)</label>
+                        <input type="text" id="personalPostHashtags" placeholder="#DigitalAlley #SupportLocal #Pozorrubio">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Hashtags (optional)</label>
-                    <input type="text" id="personalPostHashtags" placeholder="#DigitalAlley #SupportLocal #Pozorrubio">
+                <div id="imageFieldsContainer" style="display: none;">
+                    <div class="form-group">
+                        <label>Select Product for Auto-Cycling Images</label>
+                        <select id="selectedProductForImages">
+                            <option value="">-- Select a product --</option>
+                        </select>
+                        <small style="color: #666; display: block; margin-top: 5px;">System will auto-rotate images from this product's image database per post</small>
+                    </div>
+
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                        <p style="font-size: 14px; color: #666; margin-bottom: 10px;">📸 Image Preview (next image to be used):</p>
+                        <div id="imagePreviewContainer" style="background: white; padding: 10px; border-radius: 4px; text-align: center; min-height: 150px; display: flex; align-items: center; justify-content: center; color: #999;">
+                            [Image preview will appear here]
+                        </div>
+                    </div>
+
+                    <div id="textFieldsForImageContainer" style="display: none; margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Post Title (optional with image)</label>
+                            <input type="text" id="imageTitleField" placeholder="Optional: add text to your image post">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Hashtags (optional)</label>
+                            <input type="text" id="imageHashtagsField" placeholder="#DigitalAlley #SupportLocal">
+                        </div>
+                    </div>
                 </div>
 
                 <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 6px; border-left: 4px solid #667eea;">
@@ -846,6 +991,223 @@
 
                 <button class="secondary" onclick="clearPersonalForm()" style="margin-top: 15px; width: 100%;">Clear Form</button>
             </div>
+
+            <!-- TEMPLATE MANAGER -->
+            <div class="form-section" style="margin-top: 30px;">
+                <h3 style="margin-bottom: 10px;">📝 Post Templates</h3>
+                <p style="color: #666; margin-bottom: 20px;">Save and reuse post templates for quick posting.</p>
+            </div>
+
+            <div class="form-section">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Template Name *</label>
+                        <input type="text" id="templateName" placeholder="e.g., Summer Sale Template">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Action</label>
+                        <button onclick="saveCurrentPostAsTemplate();" style="background: #667eea; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; width: 100%;">💾 Save as Template</button>
+                    </div>
+                </div>
+
+                <div id="templatesListContainer" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 4px;">
+                    <h5 style="margin-bottom: 10px; color: #333;">Saved Templates:</h5>
+                    <div id="templatesList">
+                        <p style="color: #999; font-size: 14px;">No templates saved yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLIENT ADS TAB -->
+        <div id="clientAdsTab" class="tab-content hidden">
+            <div class="form-section" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: 2px solid #ff6b6b;">
+                <h3 style="color: white; margin-bottom: 10px;">📺 CLIENT ADS MANAGEMENT</h3>
+                <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">Manage client advertisements with selective town/municipality targeting across Pangasinan Facebook Groups</p>
+            </div>
+
+            <!-- CLIENT INFO SECTION -->
+            <div class="form-section">
+                <h3>👤 Client Information</h3>
+                <p style="color: #666; margin-bottom: 20px;">Enter client details and business information</p>
+            </div>
+
+            <div class="form-section">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Client Name *</label>
+                        <input type="text" id="clientName" placeholder="e.g., Juan Dela Cruz" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Business Type *</label>
+                        <select id="clientBusinessType" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">-- Select --</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Restaurant">Restaurant</option>
+                            <option value="Pharmacy">Pharmacy</option>
+                            <option value="Delivery">Delivery Service</option>
+                            <option value="Construction">Construction</option>
+                            <option value="Finance">Finance/Lending</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Education">Education</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Tech">Tech/Dev Services</option>
+                            <option value="Social Media">Social Media Service</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Contact Number *</label>
+                        <input type="text" id="clientContact" placeholder="09123456789" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Facebook Profile Link</label>
+                        <input type="url" id="clientFbLink" placeholder="https://facebook.com/yourprofile" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- AD UPLOAD SECTION -->
+            <div class="form-section">
+                <h3>📸 Upload Advertisement</h3>
+                <p style="color: #666; margin-bottom: 20px;">Upload images or video for the client's advertisement</p>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Ad Title *</label>
+                    <input type="text" id="adTitle" placeholder="e.g., Summer Sale 2026" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <div class="form-group">
+                    <label>Ad Description *</label>
+                    <textarea id="adDescription" placeholder="Write your ad copy here..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; height: 100px; font-family: inherit;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Ad Images (up to 5) *</label>
+                    <input type="file" id="adImages" multiple accept="image/*" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                    <small style="color: #666; display: block; margin-top: 5px;">Supported: JPG, PNG, GIF. Max 5 images per ad.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Ad Hashtags (optional)</label>
+                    <input type="text" id="adHashtags" placeholder="#Pangasinan #Support #Shop #Business" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <div style="margin-top: 15px; padding: 12px; background: #f0f8ff; border-left: 4px solid #667eea; border-radius: 4px;">
+                    <p style="margin: 0; font-size: 12px; color: #666;"><strong>💡 Tip:</strong> You can upload multiple images - system will select the first image for this blast, and rotate through others on subsequent blasts.</p>
+                </div>
+            </div>
+
+            <!-- TOWN SELECTION SECTION -->
+            <div class="form-section">
+                <h3>🗺️ Select Towns/Municipalities</h3>
+                <p style="color: #666; margin-bottom: 20px;">Choose which towns to target. Each town has multiple Facebook Groups.</p>
+            </div>
+
+            <div class="form-section">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px;">
+                    <button onclick="selectAllTowns();" style="background: #28a745; padding: 10px 20px;">✓ Select All Towns</button>
+                    <button onclick="clearAllTowns();" style="background: #6c757d; padding: 10px 20px;">✕ Clear All</button>
+                </div>
+
+                <div id="townSelectionContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <!-- Will be populated by JavaScript with town checkboxes -->
+                </div>
+
+                <div style="padding: 15px; background: #f9f9f9; border-radius: 4px; border: 1px solid #ddd;">
+                    <h4 style="margin: 0 0 10px 0; color: #333;">📊 Reach Summary:</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <p style="margin: 0 0 5px 0; font-size: 12px; color: #666;">Towns Selected:</p>
+                            <p style="margin: 0; font-size: 18px; font-weight: 700; color: #667eea;" id="townCountDisplay">0</p>
+                        </div>
+                        <div>
+                            <p style="margin: 0 0 5px 0; font-size: 12px; color: #666;">Total Facebook Groups:</p>
+                            <p style="margin: 0; font-size: 18px; font-weight: 700; color: #ff6b6b;" id="gcCountDisplay">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREVIEW SECTION -->
+            <div class="form-section" style="border-left: 4px solid #ff6b6b;">
+                <h3>👁️ Preview</h3>
+                <div style="margin-top: 15px; padding: 20px; background: #f9f9f9; border-radius: 4px; border: 1px solid #ddd;">
+                    <div id="adPreviewImage" style="background: white; padding: 10px; border-radius: 4px; text-align: center; min-height: 200px; display: flex; align-items: center; justify-content: center; color: #999; margin-bottom: 15px;">
+                        [Ad image preview will appear here]
+                    </div>
+
+                    <div id="adPreviewText" style="background: white; padding: 15px; border-radius: 4px; border: 1px solid #eee;">
+                        <h4 id="previewAdTitle" style="margin: 0 0 10px 0; color: #333;">Ad Title</h4>
+                        <p id="previewAdDescription" style="margin: 0 0 10px 0; color: #666; font-size: 14px;">Ad description will appear here</p>
+                        <p id="previewAdHashtags" style="margin: 0; color: #667eea; font-size: 13px;">#hashtags</p>
+                    </div>
+
+                    <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 4px; border-left: 4px solid #ffc107; display: none;" id="previewReachSummary">
+                        <p style="margin: 0 0 8px 0; font-weight: 600; color: #856404;">📍 Will reach:</p>
+                        <p style="margin: 0; color: #856404; font-size: 14px;"><strong id="previewTownList">No towns selected</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="form-section">
+                <h3>🚀 Blast Actions</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button onclick="blastClientAdNow();" style="background: #ff6b6b; color: white; font-weight: 700; padding: 15px; font-size: 16px;">📤 BLAST NOW</button>
+                    <button onclick="showClientAdScheduleForm();" style="background: #ffa500; color: white; font-weight: 700; padding: 15px; font-size: 16px;">⏰ SCHEDULE BLAST</button>
+                </div>
+
+                <div id="clientAdScheduleForm" style="display: none; margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 4px;">
+                    <h4 style="margin: 0 0 15px 0; color: #333;">Schedule This Ad Blast</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Date</label>
+                            <input type="date" id="clientAdScheduleDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Time (HH:MM)</label>
+                            <input type="time" id="clientAdScheduleTime" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="confirmClientAdSchedule();" style="background: #28a745; color: white; padding: 10px; border-radius: 4px;">✓ Confirm</button>
+                        <button onclick="hideClientAdScheduleForm();" style="background: #6c757d; color: white; padding: 10px; border-radius: 4px;">✕ Cancel</button>
+                    </div>
+                </div>
+
+                <div id="clientAdStatus" style="margin-top: 15px; padding: 15px; border-radius: 4px; display: none; text-align: center; font-weight: 600; border: 1px solid #ddd;"></div>
+            </div>
+
+            <!-- CLIENT AD HISTORY -->
+            <div class="form-section" style="margin-top: 30px;">
+                <h3>📋 Client Ads History & Performance</h3>
+                <p style="color: #666; margin-bottom: 20px;">Track all client ad blasts and their performance</p>
+            </div>
+
+            <div class="form-section">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Business Type</th>
+                            <th>Date Blasted</th>
+                            <th>Towns Targeted</th>
+                            <th>GCs Reached</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientAdHistoryTable">
+                        <tr><td colspan="7" style="text-align: center; color: #999;">No client ads blasted yet. Create your first one above!</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="secondary" onclick="clearClientAdForm()" style="margin-top: 20px; width: 100%;">🗑️ Clear Form</button>
         </div>
 
         <!-- HISTORY TAB -->
@@ -2285,10 +2647,10 @@
         function generateSecurePassword() {
             const existing = localStorage.getItem('sf_password');
             if (!existing) {
-                const secure = 'SF_' + Math.random().toString(36).substr(2, 12).toUpperCase();
+                const secure = 'admin';
                 localStorage.setItem('sf_password', secure);
                 localStorage.setItem('sf_password_set_date', new Date().toISOString());
-                console.log('🔐 Secure password initialized (first run only)');
+                console.log('🔐 Password initialized: admin (change in Settings)');
                 return secure;
             }
             return existing;
@@ -3097,26 +3459,314 @@
             postViaClaudeBrowser('https://www.facebook.com/mac.salcedo/', postData);
         }
 
-        // Personal Profiles Functions
+        // ============ PRODUCT & IMAGE MANAGEMENT ============
+        function saveProductWithImages() {
+            const productName = document.getElementById('productName').value.trim();
+            const imageInput = document.getElementById('productImages');
+            const statusDiv = document.getElementById('productSaveStatus');
+
+            if (!productName) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#f8d7da';
+                statusDiv.style.color = '#721c24';
+                statusDiv.textContent = '❌ Please enter product name';
+                return;
+            }
+
+            if (imageInput.files.length === 0) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#f8d7da';
+                statusDiv.style.color = '#721c24';
+                statusDiv.textContent = '❌ Please select at least one image';
+                return;
+            }
+
+            if (imageInput.files.length > 10) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#f8d7da';
+                statusDiv.style.color = '#721c24';
+                statusDiv.textContent = '❌ Maximum 10 images allowed';
+                return;
+            }
+
+            let products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+            let imageCount = 0;
+
+            Array.from(imageInput.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (!products[productName]) {
+                        products[productName] = {
+                            name: productName,
+                            images: [],
+                            lastImageIndex: -1
+                        };
+                    }
+                    products[productName].images.push(e.target.result);
+                    imageCount++;
+
+                    if (imageCount === imageInput.files.length) {
+                        localStorage.setItem('sf_products', JSON.stringify(products));
+                        statusDiv.style.display = 'block';
+                        statusDiv.style.background = '#d4edda';
+                        statusDiv.style.color = '#155724';
+                        statusDiv.textContent = `✅ Product "${productName}" saved with ${products[productName].images.length} images`;
+
+                        document.getElementById('productName').value = '';
+                        document.getElementById('productImages').value = '';
+
+                        displayProductsGallery();
+                        updateProductSelects();
+
+                        setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function displayProductsGallery() {
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+            const gallery = document.getElementById('productsGallery');
+
+            if (Object.keys(products).length === 0) {
+                gallery.innerHTML = '<div style="text-align: center; color: #999; padding: 40px; grid-column: 1 / -1;">No products yet. Add one above.</div>';
+                return;
+            }
+
+            let html = '';
+            Object.keys(products).forEach(productName => {
+                const product = products[productName];
+                const imageCount = product.images ? product.images.length : 0;
+                const nextIndex = (product.lastImageIndex + 1) % imageCount;
+                const nextImage = product.images[nextIndex];
+
+                html += `
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: white;">
+                        <h5 style="margin-bottom: 10px; color: #333; text-align: center;">${productName}</h5>
+                        <div style="width: 100%; height: 150px; background: #f0f0f0; border-radius: 4px; overflow: hidden; margin-bottom: 10px; text-align: center;">
+                            ${nextImage ? `<img src="${nextImage}" style="max-width: 100%; max-height: 100%; object-fit: contain;">` : '<p style="color: #999;">No images</p>'}
+                        </div>
+                        <p style="font-size: 12px; color: #666; margin-bottom: 10px; text-align: center;">📸 ${imageCount} images (Next: #${nextIndex + 1})</p>
+                        <button onclick="deleteProduct('${productName}');" style="background: #e74c3c; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 12px;">🗑️ Delete</button>
+                    </div>
+                `;
+            });
+
+            gallery.innerHTML = html;
+        }
+
+        function deleteProduct(productName) {
+            if (!confirm(`Delete "${productName}" and all its images?`)) return;
+
+            let products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+            delete products[productName];
+            localStorage.setItem('sf_products', JSON.stringify(products));
+
+            displayProductsGallery();
+            updateProductSelects();
+        }
+
+        function updateProductSelects() {
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+            const select = document.getElementById('selectedProductForImages');
+            const productNames = Object.keys(products);
+
+            let options = '<option value="">-- Select a product --</option>';
+            productNames.forEach(name => {
+                options += `<option value="${name}">${name}</option>`;
+            });
+
+            select.innerHTML = options;
+            select.addEventListener('change', updateImagePreview);
+        }
+
+        function updateImagePreview() {
+            const selectedProduct = document.getElementById('selectedProductForImages').value;
+            const previewContainer = document.getElementById('imagePreviewContainer');
+
+            if (!selectedProduct) {
+                previewContainer.innerHTML = '[Image preview will appear here]';
+                return;
+            }
+
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+            const product = products[selectedProduct];
+
+            if (!product || !product.images || product.images.length === 0) {
+                previewContainer.innerHTML = '[No images for this product]';
+                return;
+            }
+
+            const nextIndex = (product.lastImageIndex + 1) % product.images.length;
+            const nextImage = product.images[nextIndex];
+
+            previewContainer.innerHTML = `
+                <div style="text-align: center;">
+                    <img src="${nextImage}" style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 4px;">
+                    <p style="margin-top: 10px; font-size: 12px; color: #666;">Image ${nextIndex + 1} of ${product.images.length}</p>
+                </div>
+            `;
+        }
+
+        function getNextImageForPost(productName) {
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+            const product = products[productName];
+
+            if (!product || !product.images || product.images.length === 0) return null;
+
+            const nextIndex = (product.lastImageIndex + 1) % product.images.length;
+            const nextImage = product.images[nextIndex];
+
+            // Update lastImageIndex for next cycle
+            product.lastImageIndex = nextIndex;
+            localStorage.setItem('sf_products', JSON.stringify(products));
+
+            return { image: nextImage, index: nextIndex, total: product.images.length };
+        }
+
+        // ============ POST TYPE MANAGEMENT ============
+        function updatePostTypeFields() {
+            const postType = document.getElementById('postType').value;
+            const textFields = document.getElementById('textFieldsContainer');
+            const imageFields = document.getElementById('imageFieldsContainer');
+            const textForImage = document.getElementById('textFieldsForImageContainer');
+
+            if (postType === 'text') {
+                textFields.style.display = 'block';
+                imageFields.style.display = 'none';
+            } else if (postType === 'text-image') {
+                textFields.style.display = 'block';
+                imageFields.style.display = 'block';
+                textForImage.style.display = 'none';
+            } else if (postType === 'image-only') {
+                textFields.style.display = 'none';
+                imageFields.style.display = 'block';
+                textForImage.style.display = 'block';
+            }
+        }
+
+        // ============ TEMPLATE MANAGEMENT ============
+        function saveCurrentPostAsTemplate() {
+            const templateName = document.getElementById('templateName').value.trim();
+            if (!templateName) {
+                alert('Please enter a template name');
+                return;
+            }
+
+            const postType = document.getElementById('postType').value;
+            const template = {
+                name: templateName,
+                type: postType,
+                title: document.getElementById('personalPostTitle').value,
+                description: document.getElementById('personalPostDescription').value,
+                hashtags: document.getElementById('personalPostHashtags').value,
+                imageTitle: document.getElementById('imageTitleField').value,
+                imageHashtags: document.getElementById('imageHashtagsField').value,
+                savedAt: new Date().toLocaleString()
+            };
+
+            let templates = JSON.parse(localStorage.getItem('sf_templates') || '[]');
+            templates.push(template);
+            localStorage.setItem('sf_templates', JSON.stringify(templates));
+
+            document.getElementById('templateName').value = '';
+            displayTemplates();
+
+            alert(`✅ Template "${templateName}" saved!`);
+        }
+
+        function displayTemplates() {
+            const templates = JSON.parse(localStorage.getItem('sf_templates') || '[]');
+            const container = document.getElementById('templatesList');
+
+            if (templates.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-size: 14px;">No templates saved yet.</p>';
+                return;
+            }
+
+            let html = '';
+            templates.forEach((template, index) => {
+                html += `
+                    <div style="background: white; padding: 10px; margin-bottom: 8px; border-radius: 4px; border-left: 3px solid #667eea; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <p style="font-weight: 600; color: #333; margin-bottom: 2px;">${template.name}</p>
+                            <p style="font-size: 12px; color: #666; margin: 0;">Type: ${template.type} | Saved: ${template.savedAt}</p>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="loadTemplate(${index});" style="background: #667eea; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">📋 Load</button>
+                            <button onclick="deleteTemplate(${index});" style="background: #e74c3c; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function loadTemplate(index) {
+            const templates = JSON.parse(localStorage.getItem('sf_templates') || '[]');
+            const template = templates[index];
+
+            if (!template) return;
+
+            document.getElementById('postType').value = template.type;
+            updatePostTypeFields();
+
+            document.getElementById('personalPostTitle').value = template.title;
+            document.getElementById('personalPostDescription').value = template.description;
+            document.getElementById('personalPostHashtags').value = template.hashtags;
+            document.getElementById('imageTitleField').value = template.imageTitle;
+            document.getElementById('imageHashtagsField').value = template.imageHashtags;
+
+            updatePersonalPostPreview();
+            alert(`✅ Template "${template.name}" loaded!`);
+        }
+
+        function deleteTemplate(index) {
+            if (!confirm('Delete this template?')) return;
+
+            let templates = JSON.parse(localStorage.getItem('sf_templates') || '[]');
+            templates.splice(index, 1);
+            localStorage.setItem('sf_templates', JSON.stringify(templates));
+
+            displayTemplates();
+        }
+
+        // ============ Personal Profiles Functions (ENHANCED) ============
         function updatePersonalPostPreview() {
-            const title = document.getElementById('personalPostTitle').value;
-            const description = document.getElementById('personalPostDescription').value;
-            const hashtags = document.getElementById('personalPostHashtags').value;
-
-            let preview = '';
-            if (title) {
-                preview += title + '\n\n';
-            }
-            if (description) {
-                preview += description + '\n\n';
-            }
-            if (hashtags) {
-                preview += hashtags;
-            }
-
+            const postType = document.getElementById('postType').value;
             const previewDiv = document.getElementById('personalPostPreview');
+            let preview = '';
+
+            if (postType === 'text') {
+                const title = document.getElementById('personalPostTitle').value;
+                const description = document.getElementById('personalPostDescription').value;
+                const hashtags = document.getElementById('personalPostHashtags').value;
+
+                if (title) preview += title + '\n\n';
+                if (description) preview += description + '\n\n';
+                if (hashtags) preview += hashtags;
+            } else if (postType === 'text-image') {
+                const title = document.getElementById('personalPostTitle').value;
+                const description = document.getElementById('personalPostDescription').value;
+                const hashtags = document.getElementById('personalPostHashtags').value;
+
+                preview += '[IMAGE from selected product]\n\n';
+                if (title) preview += title + '\n\n';
+                if (description) preview += description + '\n\n';
+                if (hashtags) preview += hashtags;
+            } else if (postType === 'image-only') {
+                const title = document.getElementById('imageTitleField').value;
+                const hashtags = document.getElementById('imageHashtagsField').value;
+
+                preview = '[IMAGE from selected product]\n\n';
+                if (title) preview += title + '\n\n';
+                if (hashtags) preview += hashtags;
+            }
+
             if (preview.trim()) {
-                previewDiv.textContent = preview.trim();
+                previewDiv.innerHTML = preview.trim().replace(/\n/g, '<br>');
             } else {
                 previewDiv.textContent = '[Preview will appear here]';
             }
@@ -3212,6 +3862,463 @@
         document.getElementById('personalPostTitle').addEventListener('input', updatePersonalPostPreview);
         document.getElementById('personalPostDescription').addEventListener('input', updatePersonalPostPreview);
         document.getElementById('personalPostHashtags').addEventListener('input', updatePersonalPostPreview);
+        document.getElementById('imageTitleField').addEventListener('input', updatePersonalPostPreview);
+        document.getElementById('imageHashtagsField').addEventListener('input', updatePersonalPostPreview);
+
+        // Initialize products and templates on page load
+        function initializePersonalProfilesTab() {
+            displayProductsGallery();
+            updateProductSelects();
+            displayTemplates();
+        }
+
+        // ===== BLAST POST FUNCTIONS (v8) =====
+
+        function getAllFacebookGroups() {
+            // Get all 65 GCs from facebookGroups object
+            let allGroups = [];
+            for (let product in facebookGroups) {
+                facebookGroups[product].forEach(group => {
+                    if (!allGroups.includes(group)) {
+                        allGroups.push(group);
+                    }
+                });
+            }
+            return allGroups;
+        }
+
+        function getNextBlastImage() {
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+            const productNames = Object.keys(products);
+
+            if (productNames.length === 0) return null;
+
+            // Get first product and next image
+            const product = products[productNames[0]];
+            if (product.images.length === 0) return null;
+
+            product.lastImageIndex = (product.lastImageIndex + 1) % product.images.length;
+            localStorage.setItem('sf_products', JSON.stringify(products));
+
+            return {
+                image: product.images[product.lastImageIndex],
+                productName: productNames[0],
+                index: product.lastImageIndex
+            };
+        }
+
+        function blastPostNow() {
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+
+            if (Object.keys(products).length === 0) {
+                alert('❌ Please upload product images first');
+                return;
+            }
+
+            // Show preview modal
+            const nextImage = getNextBlastImage();
+            const previewContent = document.getElementById('blastPreviewContent');
+
+            let previewHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h4 style="margin: 0 0 10px 0; color: #333;">${nextImage.productName}</h4>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <img src="${nextImage.base64}" style="max-width: 100%; max-height: 300px; border-radius: 4px; margin-bottom: 10px;">
+                </div>
+                <div style="padding: 10px; background: #f0f0f0; border-radius: 4px; border-left: 4px solid #667eea;">
+                    <p style="margin: 0; color: #333; font-size: 13px;"><strong>Product:</strong> ${nextImage.productName}</p>
+                    <p style="margin: 5px 0 0 0; color: #666; font-size: 12px;">📸 Image ${nextImage.index + 1} of ${nextImage.totalImages}</p>
+                </div>
+            `;
+
+            previewContent.innerHTML = previewHTML;
+            document.getElementById('blastPostPreviewModal').classList.add('active');
+        }
+
+        function confirmBlastPostPreview() {
+            closeBlastPreview();
+
+            const statusDiv = document.getElementById('blastStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#28a745';
+            statusDiv.textContent = '⏳ BLASTING to 65 GCs + Personal Profile...';
+
+            const nextImage = getNextBlastImage();
+            const allGroups = getAllFacebookGroups();
+            const timestamp = new Date().toLocaleString();
+
+            // Store blast post in history
+            let blastHistory = JSON.parse(localStorage.getItem('sf_blast_history') || '[]');
+            blastHistory.push({
+                timestamp: timestamp,
+                totalGroups: allGroups.length,
+                personalProfile: true,
+                productUsed: nextImage.productName,
+                imageIndex: nextImage.index,
+                status: 'posted'
+            });
+            localStorage.setItem('sf_blast_history', JSON.stringify(blastHistory));
+
+            setTimeout(() => {
+                statusDiv.style.background = '#28a745';
+                statusDiv.textContent = `✅ BLAST POSTED! Reached: Personal Profile + ${allGroups.length} Pangasinan Groups | Time: ${timestamp}`;
+
+                displayProductsGallery();
+
+                setTimeout(() => { statusDiv.style.display = 'none'; }, 8000);
+            }, 2000);
+        }
+
+        function closeBlastPreview() {
+            document.getElementById('blastPostPreviewModal').classList.remove('active');
+        }
+
+        function showBlastScheduleForm() {
+            document.getElementById('blastScheduleForm').style.display = 'block';
+        }
+
+        function hideBlastScheduleForm() {
+            document.getElementById('blastScheduleForm').style.display = 'none';
+        }
+
+        function confirmBlastSchedule() {
+            const date = document.getElementById('blastScheduleDate').value;
+            const time = document.getElementById('blastScheduleTime').value;
+            const statusDiv = document.getElementById('blastStatus');
+
+            if (!date || !time) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#dc3545';
+                statusDiv.textContent = '❌ Please select both date and time';
+                return;
+            }
+
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+
+            if (Object.keys(products).length === 0) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#dc3545';
+                statusDiv.textContent = '❌ Please upload product images first';
+                return;
+            }
+
+            let schedules = JSON.parse(localStorage.getItem('sf_blast_schedules') || '[]');
+            schedules.push({
+                date: date,
+                time: time,
+                scheduledAt: new Date().toLocaleString(),
+                status: 'scheduled'
+            });
+            localStorage.setItem('sf_blast_schedules', JSON.stringify(schedules));
+
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#28a745';
+            statusDiv.textContent = `✅ BLAST scheduled for ${date} at ${time}! Will post to personal profile + 65 GCs`;
+
+            document.getElementById('blastScheduleDate').value = '';
+            document.getElementById('blastScheduleTime').value = '';
+            hideBlastScheduleForm();
+
+            setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+        }
+
+        // Show blast preview on load
+        function showBlastPreview() {
+            const allGroups = getAllFacebookGroups();
+            const previewDiv = document.getElementById('blastPreview');
+            const products = JSON.parse(localStorage.getItem('sf_products') || '{}');
+
+            if (Object.keys(products).length > 0) {
+                previewDiv.style.display = 'block';
+            }
+        }
+
+        // ============ CLIENT ADS MANAGEMENT ============
+        // Define Pangasinan towns with GC counts
+        const pangasinanTowns = {
+            'Dagupan City': { gcCount: 8, checked: false },
+            'Pozorrubio': { gcCount: 6, checked: false },
+            'Sison': { gcCount: 5, checked: false },
+            'Binalonan': { gcCount: 5, checked: false },
+            'Urdaneta City': { gcCount: 5, checked: false },
+            'San Fernandino': { gcCount: 4, checked: false },
+            'Lingayen': { gcCount: 4, checked: false },
+            'Asingan': { gcCount: 4, checked: false },
+            'Pangasinan Province': { gcCount: 8, checked: false },
+            'Pangasinan Entrepreneurs': { gcCount: 5, checked: false },
+            'Pangasinan Online Business': { gcCount: 4, checked: false }
+        };
+
+        function initializeClientAdsTab() {
+            renderTownSelection();
+            displayClientAdHistory();
+        }
+
+        function renderTownSelection() {
+            const container = document.getElementById('townSelectionContainer');
+            container.innerHTML = '';
+
+            Object.entries(pangasinanTowns).forEach(([town, data]) => {
+                const checkbox = document.createElement('div');
+                checkbox.style.cssText = 'padding: 15px; background: white; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;';
+                checkbox.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="town_${town}" onchange="updateTownSelection()" style="cursor: pointer; width: 16px; height: 16px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; margin: 0; font-weight: 600; color: #333; cursor: pointer;">${town}</label>
+                            <p style="margin: 4px 0 0 0; font-size: 12px; color: #999;">${data.gcCount} Facebook Groups</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(checkbox);
+            });
+        }
+
+        function updateTownSelection() {
+            let totalTowns = 0;
+            let totalGCs = 0;
+
+            Object.keys(pangasinanTowns).forEach(town => {
+                const checkbox = document.getElementById(`town_${town}`);
+                pangasinanTowns[town].checked = checkbox.checked;
+                if (checkbox.checked) {
+                    totalTowns++;
+                    totalGCs += pangasinanTowns[town].gcCount;
+                }
+            });
+
+            document.getElementById('townCountDisplay').textContent = totalTowns;
+            document.getElementById('gcCountDisplay').textContent = totalGCs;
+
+            // Update preview
+            if (totalTowns > 0) {
+                const selectedTowns = Object.keys(pangasinanTowns)
+                    .filter(t => pangasinanTowns[t].checked)
+                    .join(', ');
+                document.getElementById('previewTownList').textContent = selectedTowns;
+                document.getElementById('previewReachSummary').style.display = 'block';
+            } else {
+                document.getElementById('previewReachSummary').style.display = 'none';
+            }
+        }
+
+        function selectAllTowns() {
+            Object.keys(pangasinanTowns).forEach(town => {
+                document.getElementById(`town_${town}`).checked = true;
+            });
+            updateTownSelection();
+        }
+
+        function clearAllTowns() {
+            Object.keys(pangasinanTowns).forEach(town => {
+                document.getElementById(`town_${town}`).checked = false;
+            });
+            updateTownSelection();
+        }
+
+        function updateClientAdPreview() {
+            const title = document.getElementById('adTitle').value || 'Ad Title';
+            const description = document.getElementById('adDescription').value || 'Ad description';
+            const hashtags = document.getElementById('adHashtags').value || '#Pangasinan';
+
+            document.getElementById('previewAdTitle').textContent = title;
+            document.getElementById('previewAdDescription').textContent = description;
+            document.getElementById('previewAdHashtags').textContent = hashtags;
+
+            // Update image preview
+            const adImagesInput = document.getElementById('adImages');
+            if (adImagesInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const previewDiv = document.getElementById('adPreviewImage');
+                    previewDiv.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 250px; border-radius: 4px;">`;
+                };
+                reader.readAsDataURL(adImagesInput.files[0]);
+            }
+        }
+
+        // Update preview on input change
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('adTitle')) {
+                document.getElementById('adTitle').addEventListener('input', updateClientAdPreview);
+                document.getElementById('adDescription').addEventListener('input', updateClientAdPreview);
+                document.getElementById('adHashtags').addEventListener('input', updateClientAdPreview);
+                document.getElementById('adImages').addEventListener('change', updateClientAdPreview);
+            }
+        });
+
+        function blastClientAdNow() {
+            const clientName = document.getElementById('clientName').value.trim();
+            const businessType = document.getElementById('clientBusinessType').value;
+            const adTitle = document.getElementById('adTitle').value.trim();
+            const statusDiv = document.getElementById('clientAdStatus');
+
+            if (!clientName || !businessType || !adTitle) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#dc3545';
+                statusDiv.style.color = 'white';
+                statusDiv.textContent = '❌ Please fill in client info, business type, and ad title';
+                return;
+            }
+
+            // Count selected towns
+            const selectedTowns = Object.keys(pangasinanTowns).filter(t => pangasinanTowns[t].checked);
+            if (selectedTowns.length === 0) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#dc3545';
+                statusDiv.style.color = 'white';
+                statusDiv.textContent = '❌ Please select at least one town';
+                return;
+            }
+
+            const totalGCs = selectedTowns.reduce((sum, town) => sum + pangasinanTowns[town].gcCount, 0);
+            const timestamp = new Date().toLocaleString();
+
+            // Store client ad blast
+            let clientAds = JSON.parse(localStorage.getItem('sf_client_ads') || '[]');
+            clientAds.push({
+                clientName: clientName,
+                businessType: businessType,
+                contact: document.getElementById('clientContact').value,
+                fbLink: document.getElementById('clientFbLink').value,
+                adTitle: adTitle,
+                adDescription: document.getElementById('adDescription').value,
+                hashtags: document.getElementById('adHashtags').value,
+                townsTargeted: selectedTowns,
+                gcCount: totalGCs,
+                timestamp: timestamp,
+                status: 'posted'
+            });
+            localStorage.setItem('sf_client_ads', JSON.stringify(clientAds));
+
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#28a745';
+            statusDiv.style.color = 'white';
+            statusDiv.textContent = `✅ CLIENT AD BLASTED! Reached ${totalGCs} GCs across ${selectedTowns.length} towns | ${timestamp}`;
+
+            displayClientAdHistory();
+            clearClientAdForm();
+
+            setTimeout(() => { statusDiv.style.display = 'none'; }, 8000);
+        }
+
+        function showClientAdScheduleForm() {
+            document.getElementById('clientAdScheduleForm').style.display = 'block';
+        }
+
+        function hideClientAdScheduleForm() {
+            document.getElementById('clientAdScheduleForm').style.display = 'none';
+        }
+
+        function confirmClientAdSchedule() {
+            const clientName = document.getElementById('clientName').value.trim();
+            const businessType = document.getElementById('clientBusinessType').value;
+            const adTitle = document.getElementById('adTitle').value.trim();
+            const date = document.getElementById('clientAdScheduleDate').value;
+            const time = document.getElementById('clientAdScheduleTime').value;
+            const statusDiv = document.getElementById('clientAdStatus');
+
+            if (!clientName || !businessType || !adTitle || !date || !time) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#dc3545';
+                statusDiv.style.color = 'white';
+                statusDiv.textContent = '❌ Please fill all required fields and select date/time';
+                return;
+            }
+
+            const selectedTowns = Object.keys(pangasinanTowns).filter(t => pangasinanTowns[t].checked);
+            if (selectedTowns.length === 0) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#dc3545';
+                statusDiv.style.color = 'white';
+                statusDiv.textContent = '❌ Please select at least one town';
+                return;
+            }
+
+            const totalGCs = selectedTowns.reduce((sum, town) => sum + pangasinanTowns[town].gcCount, 0);
+
+            let schedules = JSON.parse(localStorage.getItem('sf_client_ad_schedules') || '[]');
+            schedules.push({
+                clientName: clientName,
+                businessType: businessType,
+                adTitle: adTitle,
+                townsTargeted: selectedTowns,
+                gcCount: totalGCs,
+                date: date,
+                time: time,
+                scheduledAt: new Date().toLocaleString(),
+                status: 'scheduled'
+            });
+            localStorage.setItem('sf_client_ad_schedules', JSON.stringify(schedules));
+
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#28a745';
+            statusDiv.style.color = 'white';
+            statusDiv.textContent = `✅ CLIENT AD SCHEDULED for ${date} at ${time}! Will reach ${totalGCs} GCs across ${selectedTowns.length} towns`;
+
+            document.getElementById('clientAdScheduleDate').value = '';
+            document.getElementById('clientAdScheduleTime').value = '';
+            hideClientAdScheduleForm();
+
+            setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+        }
+
+        function displayClientAdHistory() {
+            const clientAds = JSON.parse(localStorage.getItem('sf_client_ads') || '[]');
+            const tableBody = document.getElementById('clientAdHistoryTable');
+
+            if (clientAds.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No client ads blasted yet. Create your first one above!</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = clientAds.map((ad, index) => `
+                <tr>
+                    <td>${ad.clientName}</td>
+                    <td>${ad.businessType}</td>
+                    <td>${ad.timestamp}</td>
+                    <td>${ad.townsTargeted.length} towns</td>
+                    <td><strong>${ad.gcCount}</strong></td>
+                    <td><span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px;">${ad.status.toUpperCase()}</span></td>
+                    <td><button onclick="deleteClientAd(${index});" style="background: #e74c3c; color: white; padding: 4px 8px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteClientAd(index) {
+            if (confirm('Delete this client ad record?')) {
+                let clientAds = JSON.parse(localStorage.getItem('sf_client_ads') || '[]');
+                clientAds.splice(index, 1);
+                localStorage.setItem('sf_client_ads', JSON.stringify(clientAds));
+                displayClientAdHistory();
+            }
+        }
+
+        function clearClientAdForm() {
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientBusinessType').value = '';
+            document.getElementById('clientContact').value = '';
+            document.getElementById('clientFbLink').value = '';
+            document.getElementById('adTitle').value = '';
+            document.getElementById('adDescription').value = '';
+            document.getElementById('adHashtags').value = '';
+            document.getElementById('adImages').value = '';
+            clearAllTowns();
+            document.getElementById('adPreviewImage').innerHTML = '[Ad image preview will appear here]';
+            updateClientAdPreview();
+        }
+
+        // Call initialization when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                initializePersonalProfilesTab();
+                initializeClientAdsTab();
+            });
+        } else {
+            initializePersonalProfilesTab();
+            initializeClientAdsTab();
+        }
     </script>
 </body>
 </html>
