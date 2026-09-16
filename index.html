@@ -816,7 +816,11 @@
 
                 <div class="form-group">
                     <label>Hashtags (optional)</label>
-                    <input type="text" id="personalPostHashtags" placeholder="#DigitalAlley #SupportLocal #Pozorrubio">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="personalPostHashtags" placeholder="#DigitalAlley #SupportLocal #Pozorrubio" style="flex: 1;">
+                        <button onclick="validatePersonalPostHashtags()" style="background: #667eea; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap;">✓ Validate</button>
+                    </div>
+                    <p style="font-size: 11px; color: #999; margin-top: 6px;">Format: #hashtag1 #hashtag2 (alphanumeric, _, max 30 chars each, max 30 total)</p>
                 </div>
 
                 <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 6px; border-left: 4px solid #667eea;">
@@ -1901,6 +1905,11 @@
 
         // Switch tabs
         function switchTab(tabId) {
+            // Save form data from Create Post tab before switching
+            if (tabId !== 'postTab') {
+                saveCreatePostFormData();
+            }
+
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
 
@@ -1911,8 +1920,97 @@
             } else if (tabId === 'leadsTab') {
                 updateLeadsTable();
             } else if (tabId === 'personalProfilesTab') {
-                autoLoadCurrentHourTemplate();
+                loadFormDataToPersonalProfiles();
             }
+        }
+
+        // Save form data from Create Post tab to localStorage
+        function saveCreatePostFormData() {
+            const formData = {
+                postTitle: document.getElementById('postTitle').value,
+                postDescription: document.getElementById('postDescription').value,
+                postHashtags: document.getElementById('postHashtags').value
+            };
+            localStorage.setItem('sf_create_post_form', JSON.stringify(formData));
+        }
+
+        // Load form data to Personal Profiles tab
+        function loadFormDataToPersonalProfiles() {
+            // First try to load from Create Post form data
+            const savedFormData = localStorage.getItem('sf_create_post_form');
+            if (savedFormData) {
+                try {
+                    const formData = JSON.parse(savedFormData);
+                    if (formData.postTitle || formData.postDescription || formData.postHashtags) {
+                        document.getElementById('personalPostTitle').value = formData.postTitle || '';
+                        document.getElementById('personalPostDescription').value = formData.postDescription || '';
+                        document.getElementById('personalPostHashtags').value = formData.postHashtags || '';
+                        updatePersonalPostPreview();
+                        return;
+                    }
+                } catch (e) {
+                    console.log('Error loading form data:', e);
+                }
+            }
+
+            // If no saved form data, try auto-loading scheduled template for current hour
+            autoLoadCurrentHourTemplate();
+        }
+
+        // Validate hashtags format
+        function validateHashtags(hashtagsStr) {
+            if (!hashtagsStr || hashtagsStr.trim() === '') {
+                return { valid: true, errors: [] };
+            }
+
+            const errors = [];
+            const hashtags = hashtagsStr.split(/[\s,]+/).filter(tag => tag.length > 0);
+
+            hashtags.forEach(tag => {
+                if (!tag.startsWith('#')) {
+                    errors.push(`"${tag}" should start with #`);
+                }
+                if (tag.length > 30) {
+                    errors.push(`"${tag}" is too long (max 30 characters)`);
+                }
+                if (!/^#[a-zA-Z0-9_]+$/.test(tag)) {
+                    errors.push(`"${tag}" contains invalid characters (only alphanumeric and _ allowed)`);
+                }
+            });
+
+            // Check total hashtags count
+            if (hashtags.length > 30) {
+                errors.push(`Too many hashtags (max 30)`);
+            }
+
+            // Check total length
+            if (hashtagsStr.length > 300) {
+                errors.push('Hashtags too long (max 300 characters total)');
+            }
+
+            return {
+                valid: errors.length === 0,
+                errors: errors,
+                count: hashtags.length
+            };
+        }
+
+        // Add hashtag validation to personal profile form
+        function validatePersonalPostHashtags() {
+            const hashtagsInput = document.getElementById('personalPostHashtags');
+            const validation = validateHashtags(hashtagsInput.value);
+
+            if (!validation.valid) {
+                const errorMsg = validation.errors.join('\n');
+                showError('❌ Hashtag Validation Error:\n' + errorMsg);
+                return false;
+            }
+
+            if (validation.count > 0) {
+                showSuccess(`✅ Hashtags validated (${validation.count} tags)`);
+            }
+
+            return true;
         }
 
         // Auto-load scheduled template content for current hour in Personal Profiles
@@ -3052,6 +3150,15 @@
                 return;
             }
 
+            // Validate hashtags if provided
+            if (hashtags) {
+                const hashtagValidation = validateHashtags(hashtags);
+                if (!hashtagValidation.valid) {
+                    showError('❌ Hashtag Validation Error:\n' + hashtagValidation.errors.join('\n'));
+                    return;
+                }
+            }
+
             // Check Facebook restrictions for personal profile
             const personalProfileKey = 'mac_salcedo|personal';
             const now = Date.now();
@@ -3170,12 +3277,25 @@
         }
 
         function postToMacSalcedo() {
-            const postText = generatePersonalPostText();
+            const title = document.getElementById('personalPostTitle').value.trim();
+            const description = document.getElementById('personalPostDescription').value.trim();
+            const hashtags = document.getElementById('personalPostHashtags').value.trim();
 
-            if (!postText) {
+            if (!title && !description) {
                 alert('Please create a post first (title or description)');
                 return;
             }
+
+            // Validate hashtags if provided
+            if (hashtags) {
+                const hashtagValidation = validateHashtags(hashtags);
+                if (!hashtagValidation.valid) {
+                    alert('Hashtag Validation Error:\n' + hashtagValidation.errors.join('\n'));
+                    return;
+                }
+            }
+
+            const postText = generatePersonalPostText();
 
             // Copy to clipboard
             navigator.clipboard.writeText(postText).then(() => {
